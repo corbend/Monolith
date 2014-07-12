@@ -1,0 +1,188 @@
+
+body {
+	position: absolute;
+	margin: 0;
+	padding: 10px;
+	font-family: Verdana;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	top: 0;
+	min-width: 1550px;
+}
+
+#projects-list-template {
+	width: 100%;
+	height: 100%;
+}
+
+.project-info {
+	position: relative;
+	min-height: 500px;
+	bottom: 0;
+}
+
+#toolbar-region {
+	float: left;
+/*	width: 20px;*/
+}
+
+#content-region {
+	float: left;
+	height: 100%;
+	width: 90%;
+	min-height: 900px;
+}
+
+#main-region {
+	width: 100%;
+	height: 100%;
+}
+
+#main-layout {
+	width: 100%;
+	height: 100%;
+}
+
+/*#content-region {
+	width: 100%;
+	height: 100%;
+}*/
+
+#content-region .panel {
+	width: 100%;
+	height: 100%;
+}
+
+#content-region table {
+	width: 100%;
+	height: 100%;
+}
+
+
+#navbar {
+	padding: 10px;
+	text-align: center;
+}
+
+#navbar a {
+	width: 140px;
+	text-decoration: none;
+	color: white;
+}
+
+#navbar ul {
+	margin: 0 auto;
+}
+
+#navbar #project-search {
+	float: left;
+}
+
+#navbar .username {
+	float: left;
+	color: white;
+	width: 300px;
+	height: 50px;
+}
+
+#navbar .logout {
+	height: 100%;
+	float: right;
+	width: 100px;
+}
+
+.expand-project {
+	height: 100%;
+}
+
+
+table td {
+	padding-left: 10px;
+}
+
+table th {
+	padding-left: 10px;
+}
+
+table tr td:first-child {
+	width: 50px;
+	padding: 0;
+}
+
+table tr {
+	height: 50px;
+}
+
+.task-header {
+	height: 40px;
+}
+
+.task-content {
+	min-height: 200px;
+}
+
+.full-range {
+	width: 100%;
+	height: 100%;
+}
+
+.tab-content {
+	position: relative;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+/*CREATE PROJECT*/
+#js-project-create {
+	width: 100%;
+	height: 100%;
+}
+
+#create-project-region .panel-wrapper {
+	padding: 0;
+	height: 50%;
+}
+
+#create-project-region .grids-container {
+	padding: 0;
+	height: 100%;
+}
+
+#create-project-region .new-user-list {
+	float: right;
+	padding: 0;
+	width: 100%;
+	height: 50%;
+}
+
+#create-project-region .new-task-list {
+	float: right;
+	padding: 0;
+	width: 100%;
+	height: 50%;
+}
+
+/*BUTTONS*/
+
+.form-button {
+	width: 100px;
+}
+
+/*MODAL*/
+
+#myModal .modal-body {
+	width: 100%;
+	height: 500px;
+}
+
+#create-task-region {
+	width: 100%;
+	height: 100%;
+}
+
+#create-task-region form textarea{
+	height: 300px;
+}

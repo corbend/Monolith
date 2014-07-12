@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Monolith - simple taskboard</title>
+
+		<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.css"/>
+		<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.css"/>
+
+		<link rel="stylesheet" type="text/css" href="css/main.css"/>
+		<script type="text/javascript" data-main="js/main" src="lib/require.js"></script>
+	</head>
+
+	<body>
+		<div id="navbar" class="navbar navbar-inverse">
+			<div class="col-md-6">
+				<div id="main-menu-region"></div>
+			</div>
+			<div class="col-md-3">
+				<div id="project-search" class="input-group">
+					<input class="form-control" placeholder="Введите название или номер проекта, задачи">
+					<span class="input-group-btn">
+						<button class="btn btn-default" type="button">
+							<span class="glyphicon glyphicon-search"></span>
+						</button>
+					</span>
+				</div>
+			</div>
+			<div class="wheel username">
+				Иванов Иван Иванович
+			</div>
+			<div class="logout">
+				<button class="btn btn-success btn-nav">
+					Выход
+				</button>
+			</div>
+		</div>
+		<div id="main-region">
+
+		</div>
+
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+		  		<div class="modal-content">
+		      		<div class="modal-header">
+		        		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Отмена</span></button>
+		        		<h4 class="modal-title" id="myModalLabel">Создание задачи</h4>
+		      		</div>
+		      		<div class="modal-body">
+		      	 		<div id="create-task-region" class="panel panel-default"></div>
+		      		</div>
+		      		<div class="modal-footer">
+		        		<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+		        		<button type="button" class="btn btn-primary">Сохранить</button>
+		      		</div>
+		    	</div>
+		  	</div>
+		</div>
+	</body>
+
+	<script id="main-layout" type="text/template">
+		<div id="toolbar-region">
+		</div>
+		<div id="content-region">
+		</div>
+	</script>
+
+	<script id="menu-item-template" type="text/template">
+		<a><%=name%></a>
+		<% if (showCounter) {%>
+		<div class="badge">0</div>
+		<% } %>
+	</script>
+
+	<script id="user-item-template" type="text/template">
+		<label for="field-name"></label><span class="field-name"><%=name%></span>
+		<label for="field-joined"></label><span class="field-joined"><%=datePrettify()%></span>
+	</script>
+
+	<script id="project-item-template" type="text/template">
+		<td><input type="checkbox"></td>
+		<td><button class="expand-project btn btn-success">Задачи</button></td>
+		<td><%=name%></td>
+		<td><%=description%></td>
+		<td><%=startedTime%></td>
+		<td>
+			<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+				<span class="sr-only">40% Complete (success)</span>
+			</div>
+		</td>
+		<div class="tasks-list panel panel-default">
+			<ul>
+				<li>Задача
+				</li>
+			</ul>
+		</div>
+	</script>
+	<script id="projects-list-template" type="text/template">
+		<div class="panel-heading">
+			Проекты
+		</div>
+		<div class="panel-body">
+			<div class="panel panel-default">
+				<table>
+				<thead>
+					<tr>
+						<th><input type="checkbox"></th>
+						<th><button class="btn btn-success">+</button></th>
+						<th>Название</th>
+						<th>Описание</th>
+						<th>Начат</th>
+						<th>Прогресс</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+				</table>
+			</div>
+			<div class="project-info panel panel-default">
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="active"><a href="#project-analyze" role="tab" data-toggle="tab">Статистика</a></li>
+					<li><a href="#project-content" role="tab" data-toggle="tab">Описание</a></li>
+					<li><a href="#project-workers" role="tab" data-toggle="tab">Участники</a></li>
+					<li><a href="#project-journal" role="tab" data-toggle="tab">Журнал</a></li>
+					<li><a href="#project-print" role="tab" data-toggle="tab">Отчет</a></li>
+					<li><a href="#js-project-create" role="tab" data-toggle="tab">Создать</a></li>
+					<li><a href="#js-project-archive" role="tab" data-toggle="tab">Архивация</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="project-analyze" class="tab-pane active">
+						<div class="row"><label class="col-md-2">Статус проекта</label></div>
+						<div class="row"><label class="col-md-2">Общий процент выполнения</label></div>
+						<div class="row"><label class="col-md-2">Примерный срок окончания</label></div>
+						<div class="row"><label class="col-md-2">Количество задач</label></div>
+						<div class="row"><label class="col-md-2">Количество открытых</label></div>
+						<div class="row"><label class="col-md-2">Количество закрытых</label></div>
+						<div class="row"><label class="col-md-2">Выполненных менее чем на 50%</label></div>
+						<div class="row"><label class="col-md-2">Затраченного времени > 8</label></div>
+						<div class="row"><label class="col-md-2">Задач без исполнителя</label></div>
+						<div class="row"><label class="col-md-2">Задач без ответов</label></div>
+					</div>
+					<div id="project-content" class="tab-pane"></div>
+					<div id="project-workers" class="tab-pane"></div>
+					<div id="project-journal" class="tab-pane"></div>
+					<div id="project-report" class="tab-pane"></div>
+					<div id="js-project-create" class="tab-pane">
+						<div id="create-project-region">
+						</div>
+					</div>
+					<div id="js-project-archive" class="tab-pane">
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script id="task-toolbar-template" type="text/template">
+		<div class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-th-large"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div>
+
+	</script>
+	<script id="project-toolbar-template" type="text/template">
+		<div class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-th-large"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div>
+	</script>
+
+	<script id="task-empty-template" type="text/template">
+		<h1>У выбранного проекта нет активных задач.</h1>
+		<button id="create-task-button" class="btn-lg btn-success" data-toggle="modal" data-target="#myModal">Создать</button>
+	</script>
+
+	<script id="task-item-template" type="text/template">
+		<div class="row task-header">
+			<div class="col-md-12">
+				<span class="col-md-1 label-primary"><%=name%></span>
+				<span class="col-md-4"><%=description%></span>
+				<%=started%>
+				<%=progress%>
+				<%=ended%>
+			</div>
+			
+		</div>
+		<div class="row task-content">
+			<ul class="nav nav-tabs" role="tablist">
+				<li class="active"><a href="#task-content-<%=_id%>" role="tab" data-toggle="tab">Описание</a></li>
+				<li><a href="#task-workers-<%=_id%>" role="tab" data-toggle="tab">Участники</a></li>
+				<li><a href="#task-journal-<%=_id%>" role="tab" data-toggle="tab">Журнал</a></li>
+				<li><a href="#task-print-<%=_id%>" role="tab" data-toggle="tab">Отчет</a></li>
+				<li><a href="#task-analyze-<%=_id%>" role="tab" data-toggle="tab">Статистика</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="task-content-<%=_id%>" class="tab-pane active"></div>
+				<div id="task-workers-<%=_id%>" class="tab-pane"></div>
+				<div id="task-journal-<%=_id%>" class="tab-pane"></div>
+				<div id="task-report-<%=_id%>" class="tab-pane"></div>
+				<div id="task-analyze-<%=_id%>" class="tab-pane"></div>
+			</div>
+		</div>
+	</script>
+
+	<script id="create-project-template" type="text/template">
+		<form>
+			<div class="col-md-6">
+				<div class="input-group">
+					<span class="input-group-addon">Название</span>
+					<input name="name" class="form-control" type="input">
+				</div>
+				<div class="input-group">
+					<span class="input-group-addon">Описание</span>
+					<textarea name="description" class="form-control" type="input"></textarea>
+				</div>
+			</div>
+			<div class="col-md-6 grids-container">
+				<div class="panel panel-default panel-wrapper col-md-12">
+					<div class="panel-heading">Участники</div>
+					<div class="panel-text new-user-list">
+						<ul class="list-group">
+							<li class="list-group-item"></li>
+						</ul>
+					</div>
+				</div>
+				<div class="panel panel-default panel-wrapper col-md-12">
+					<div class="panel-heading">Задачи</div>
+					<div class="panel-text new-task-list">
+						<ul class="list-group">
+							<li class="list-group-item"></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<button class="btn btn-success form-button save-button">
+				Сохранить
+			</button>
+			<button class="btn btn-default form-button cancel-button">
+				Отмена
+			</button>
+		</form>
+	</script>
+
+	<script id="create-task-template" type="text/template">
+		<form>
+			<div class="col-md-12" style="height: 400px;">
+				<div class="input-group">
+					<span class="input-group-addon">Название</span>
+					<input name="name" class="form-control" type="input">
+				</div>
+				<div class="input-group">
+					<span class="input-group-addon">Описание</span>
+					<textarea name="description" class="form-control" type="input"></textarea>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<select name="worker">
+
+				</select>
+			</div>
+		</form>
+	</script>
+</html>
