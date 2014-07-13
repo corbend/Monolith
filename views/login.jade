@@ -1,0 +1,40 @@
+doctype html
+
+html
+    head
+    link(rel="stylesheet", href="css/login.css", type="text/css")
+    link(rel="stylesheet", href="vendor/jqwidgets/styles/jqx.base.css", type="text/css")
+    script(type="text/javascript" src="lib/jquery.js")
+    script(type="text/javascript" src="/vendor/jqwidgets/jqxcore.js")
+    script(type="text/javascript" src="/vendor/jqwidgets/gettheme.js")
+    script(type="text/javascript" src="/vendor/jqwidgets/jqxbuttons.js")
+    script(type="text/javascript" src="/vendor/jqwidgets/jqxinput.js")
+    script(type="text/javascript" src="/vendor/jqwidgets/jqxmaskedinput.js")
+    script(type="text/javascript" src="/vendor/jqwidgets/jqxvalidator.js")
+    script(type="text/javascript" src="/js/login.js")
+
+body
+    div#login_wrapper
+
+        div.title_bar
+            h1 ВХОД В СИСТЕМУ
+            - if (message.length > 0)
+                div.error_container
+                    p #{message}
+
+        form#login_form(action="/auth" method="POST")
+            ul
+                li 
+                    label(for="username") Имя пользователя
+                    input#username_field(name="username", type="text")
+        
+                li
+                    label(for="password") Пароль
+                    input#password_field(name="password", type="password")
+        
+                li
+                    div.submit_container
+                        div.center-justify
+                            div.width60
+                                input#login_submit(type="button", value="ВХОД")
+                        

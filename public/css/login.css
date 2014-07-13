@@ -1,0 +1,83 @@
+body {
+    background-image: url(/images/login-background.jpg);
+    font-family: Verdana, sans-serif;
+    color: #0385f3;
+}
+a {
+    text-decoration: none;
+    color: coral;
+}
+
+label {
+    display: block;
+    float: left;
+    height: 30px;
+    text-align: left;
+}
+
+input {
+    display: block;
+    float: right;
+    width: 40%;
+}
+
+ul {
+    list-style: none;
+    width: 100%;
+}
+
+ul li {
+    width: 80%;
+    height: 40px;
+    margin-left: 0px;
+}
+
+.center-justify {
+    width: 60%;
+    margin: 0 auto;
+}
+.width60 {
+    width: 100%;
+}
+
+#login_submit {
+    width: 50px;
+    float: none;
+}
+
+.title_bar {
+    height: 80px;
+    border-bottom: 2px solid #0385f3;
+}
+
+.title_bar h1 {
+    margin-bottom: 5px;
+}
+
+.submit_container {
+    float: left;
+    width: 100%;
+    height: 30px;
+    margin: 0 auto;
+}
+
+.bottom_link {
+    float: right;
+    width: 40%;
+    height: 30px;
+}
+
+#login_wrapper {
+    border-radius: 10px;
+    border: 1px solid #b0ccf2;
+    background: #ffffff;
+    width: 400px;
+    height: 250px;
+    text-align: center;
+    margin: 190px auto;
+}
+
+.error_container p {
+    color: red;
+    margin-top: 0;
+}

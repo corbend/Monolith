@@ -23,6 +23,30 @@ function createUser(username, password, cb) {
 
 }
 
+function checkPassword(user, password, cb) {
+
+	if (!user || !user.passwordSalt || !password) {
+		return cb(null, false, { message: 'Ошибка авторизации!'});
+	}
+
+	var buf = new Buffer(user.passwordSalt, 'hex');
+
+	crypto.pbkdf2(password, buf, 1000, 64, function(err, key) {
+
+		if (!err && user.passwordHash == key.toString("hex")) {
+			console.log("PASS RIGHT!");
+			cb(null, {success: true, message: '', data: {
+				username: user.username
+			}});
+		} else {
+			console.log("PASS WRONG!");
+			cb(null, false, {message: 'Неверный пароль!'});
+		}
+	});
+
+}
+
 exports.Api = {
-	createUser: createUser
+	createUser: createUser,
+	checkPassword: checkPassword
 }

@@ -4,8 +4,19 @@ var Project = require('./models/Project').Project;
 var Task = require('./models/Task').Task;
 var User = require('./models/User').User;
 
+function isAuth(req, res, next) {
+
+	if (req.isAuthenticated()) {
+		console.log("Authenticated OK!");
+		next();
+	} else {
+		res.redirect("/auth");
+	}
+}
+
 exports.route = function(eApp) {
-	eApp.get("/", function(req, res) {
+
+	eApp.get("/", isAuth, function(req, res) {
 		//FIXME - переместить файл в паблик
 		res.sendfile("main.html");
 	});
