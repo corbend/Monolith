@@ -50,6 +50,8 @@
 		      		</div>
 		      		<div class="modal-body">
 		      	 		<div id="create-task-region" class="panel panel-default"></div>
+		      	 		<div id="create-user-region" class="panel panel-default"></div>
+		      	 		<div id="append-user-region"></div>
 		      		</div>
 		      		<div class="modal-footer">
 		        		<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
@@ -97,6 +99,7 @@
 			</ul>
 		</div>
 	</script>
+
 	<script id="projects-list-template" type="text/template">
 		<div class="panel-heading">
 			Проекты
@@ -172,6 +175,14 @@
 		<div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div>
 	</script>
 
+	<script id="user-toolbar-template" type="text/template">
+		<div class="btn btn-default btn-new"><span class="glyphicon glyphicon-plus"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-th-large"></span></div>
+		<div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div>
+	</script>
+
 	<script id="task-empty-template" type="text/template">
 		<h1>У выбранного проекта нет активных задач.</h1>
 		<button id="create-task-button" class="btn-lg btn-success" data-toggle="modal" data-target="#myModal">Создать</button>
@@ -191,14 +202,23 @@
 		<div class="row task-content">
 			<ul class="nav nav-tabs" role="tablist">
 				<li class="active"><a href="#task-content-<%=_id%>" role="tab" data-toggle="tab">Описание</a></li>
-				<li><a href="#task-workers-<%=_id%>" role="tab" data-toggle="tab">Участники</a></li>
-				<li><a href="#task-journal-<%=_id%>" role="tab" data-toggle="tab">Журнал</a></li>
-				<li><a href="#task-print-<%=_id%>" role="tab" data-toggle="tab">Отчет</a></li>
-				<li><a href="#task-analyze-<%=_id%>" role="tab" data-toggle="tab">Статистика</a></li>
+				<li>
+					<a href="#task-workers-<%=_id%>" class="append-user" role="tab" data-toggle="tab">
+						Участники
+					</a>
+				</li>
+				<li>
+				<a href="#task-journal-<%=_id%>" role="tab" data-toggle="tab">Журнал</a></li>
+				<li>
+				<a href="#task-print-<%=_id%>" role="tab" data-toggle="tab">Отчет</a></li>
+				<li>
+				<a href="#task-analyze-<%=_id%>" role="tab" data-toggle="tab">Статистика</a></li>
 			</ul>
 			<div class="tab-content">
 				<div id="task-content-<%=_id%>" class="tab-pane active"></div>
-				<div id="task-workers-<%=_id%>" class="tab-pane"></div>
+				<div id="task-workers-<%=_id%>" class="tab-pane">
+					<div class="task-users-content"></div>
+				</div>
 				<div id="task-journal-<%=_id%>" class="tab-pane"></div>
 				<div id="task-report-<%=_id%>" class="tab-pane"></div>
 				<div id="task-analyze-<%=_id%>" class="tab-pane"></div>
@@ -264,4 +284,57 @@
 			</div>
 		</form>
 	</script>
+
+	<script id="task-user-list-template" type="text/template">
+		<div class="panel panel-default col-md-12">
+			<ul class="col-md-12 task-user-list">
+			</ul>	
+			<button class="btn btn-success append-user-btn">Добавить</button>
+		</div>
+	</script>
+
+	<script id="task-user-item-template" type="text/template">
+		<input type="checkbox">
+		<%=name%>
+		<%=joined%>
+	</script>
+
+	<script id="create-user-template" type="text/template">
+		<form class="create-user-form">
+			<div class="col-md-12" style="height: 400px;">
+				<div class="input-group col-md-12">
+					<span class="input-group-addon">Имя пользователя</span>
+					<input name="name" class="col-md-6 form-control" type="input">
+				</div>
+				<div class="input-group col-md-12">
+					<span class="input-group-addon">Название</span>
+					<input name="fullname" class="form-control" type="input">
+				</div>
+				<div class="input-group col-md-12">
+					<span class="input-group-addon">Права</span>
+					<select name="groupId">
+						<option>Разработчик</option>
+						<option>Администратор</option>
+						<option>Аналитик</option>
+					</select>
+				</div>
+				<div class="input-group col-md-12">
+					<span class="input-group-addon">Пароль</span>
+					<input name="password" class="form-control" type="input">
+				</div>
+				<div class="input-group col-md-12">
+					<span class="input-group-addon">Повтор пароля</span>
+					<input name="passwordRepeat" class="form-control" type="input">
+				</div>
+				<div class="input-group col-md-12">
+					<span class="input-group-addon">Email</span>
+					<input name="email" class="form-control" type="input">
+				</div>
+			</div>
+		</form>
+	</script>
+
+	<script id="task-user-form-template" type="text/template">
+	</script>
+
 </html>

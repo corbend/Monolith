@@ -4,18 +4,6 @@ define('root/projects/Projects', [
 ], function($, _, Backbone, Marionette, 
 	Create
 ) {"use strict";
-		
-	var TimePoint = Backbone.Model.extend({
-
-	});
-
-	var TimeLine = Backbone.Collection.extend({
-		model: TimePoint
-	});
-
-	var TimeLineView = Marionette.CollectionView.extend({
-		className: 'panel panel-default',
-	});
 
 	var ProjectStatuses = [
 		'START', 'DELAY', 'FROZEN', 'END', 'DEAD' 
@@ -87,14 +75,14 @@ define('root/projects/Projects', [
 		getProjectById: function(id) {
 			return projects.get(id);
 		},
-		showProjects: function() {
+		showProjects: function(contentRegion) {
 
 			var projectView = new ProjectView({
 				collection: projects
 			});
 
 			projectView.on('childview:show:task', function(childView, projectModel) {
-				this.App.trigger("project:show:task", projectModel.id);
+				this.App.trigger("project:show:task", projectModel.id, contentRegion);
 			}, this);
 
 			return projectView;

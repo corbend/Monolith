@@ -1,14 +1,24 @@
 define('root/tasks/Task', [
 	'jquery', 'underscore', 'backbone', 'backbone.marionette',
-	'root/tasks/Create'
+	'root/tasks/Create',
+	'root/tasks/TaskUsers'
 ], function($, _, Backbone, Marionette,
-	Create
+	Create, TaskUsers
 ) {"use strict";
 		
 	var TaskItem = Marionette.ItemView.extend({
 		template: '#task-item-template',
 		tagName: 'li',
-		className: 'list-group-item'
+		className: 'list-group-item',
+		events: {
+			'click .append-user': 'onTabUsersClick'
+		},
+		triggers: {
+			'click .append-user-btn': 'task:users:new' 
+		},
+		onTabUsersClick: function(event) {
+			this.trigger('task:users:show', event);
+		}
 	});
 
 	var TaskEmpty = Marionette.ItemView.extend({
@@ -60,9 +70,9 @@ define('root/tasks/Task', [
 
 			this.App = App;
 
-			this.App.on('project:show:task', function(projectId) {
+			this.App.on('project:show:task', function(projectId, contentRegion) {
 				this.App.Router.navigate('/projects/' + projectId + '/tasks');
-				this.showTasks(projectId);
+				this.showTasks(projectId, contentRegion);
 			}, this);
 
 			this.App.on('task:create', function(projectId) {
@@ -88,7 +98,7 @@ define('root/tasks/Task', [
 			var ProjectTasks, projectTasks;
 
 			if (projectId) {
-				ProjectTask = Tasks.extend({
+				ProjectTasks = Tasks.extend({
 					url: function() {
 						return 'projects/' + projectId + "/tasks";
 					}
@@ -117,6 +127,22 @@ define('root/tasks/Task', [
 						});
 
 						scope.App.trigger('task:create', projectId);
+					}, scope);
+
+					taskListView.on('childview:task:users:show', function(taskView, event) {
+						var taskId = taskView.model.id;
+						scope.App.Router.navigate('tasks/' + taskId + '/users');
+						var region = new Marionette.Region({
+							el: taskView.$('.task-users-content')
+						});
+						TaskUsers.Controller.showTaskUsers(region, taskId);
+					}, scope);
+
+					taskListView.on('childview:task:users:new', function(taskView, event) {
+
+						var taskId = taskView.model.id;
+						scope.App.Router.navigate('tasks/' + taskId + '/users/new');
+						TaskUsers.Controller.showAppendForm(taskView.model);
 					}, scope);
 				}
 			})

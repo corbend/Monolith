@@ -1,10 +1,9 @@
 define('root/tasks/Create', [
   'jquery', 'underscore', 'backbone', 'backbone.marionette',
   'backbone.syphon'
-], 
-function($, _, Backbone, Marionette, Syphon) {"use strict";
-        
-    var Region = Marionette.Region.extend({
+], function($, _, Backbone, Marionette, Syphon) {"use strict";    
+  
+  var Region = Marionette.Region.extend({
       el: "#create-task-region"
     });
 

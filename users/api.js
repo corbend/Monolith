@@ -1,7 +1,7 @@
 var crypto = require('crypto');
 var User = require('../models/User').User;
 
-function createUser(username, password, cb) {
+function createUser(username, password, cb, userdata) {
 	//генерируем соль
     var salt = crypto.randomBytes(64, function(err, buf) {
     	if (err) {cb(err)}
@@ -13,7 +13,10 @@ function createUser(username, password, cb) {
 					name: username,
 					passwordHash: new Buffer(key).toString("hex"),
 					passwordSalt: buf.toString("hex"),
-					joined: new Date()
+					joined: new Date(),
+					fullname: (userdata && userdata.fullname) || '',
+					groupId: (userdata && userdata.groupId) || 1,
+					email: (userdata && userdata.email) || ''
 				}, function(err, admin) {
 					cb(err, admin);
 				});

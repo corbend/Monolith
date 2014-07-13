@@ -64,7 +64,7 @@ define('root/MainApp', [
 						scope.showTasks(null, layout);
 						break;
 					case 4:
-						App.User.Controller.showUserList(layout.contentRegion);
+						scope.showUsers(layout);
 						break;
 				}
 			});
@@ -76,7 +76,7 @@ define('root/MainApp', [
 
 			Project.Collection.fetch({
 				success: function() {
-					layout.contentRegion.show(App.Project.Controller.showProjects());
+					layout.contentRegion.show(App.Project.Controller.showProjects(layout.contentRegion));
 				}
 			})
 
@@ -94,11 +94,10 @@ define('root/MainApp', [
 		},
 		showUsers: function() {
 
-			var layout = new Layout();
-			App.mainRegion.show(layout);
+			var layout = layout || this.createMainLayout();
 
-			layout.contentRegion.show(App.User.Controller.showUserList());
-			// layout.toolbarRegion.show(new User.Toolbar());
+			App.User.Controller.showUserList(layout.contentRegion);
+			layout.toolbarRegion.show(new User.Toolbar());
 		}
 	}
 

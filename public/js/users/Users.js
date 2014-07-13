@@ -26,7 +26,10 @@ define('root/users/Users', [
 		urlRoot: 'users',
 		defaults: {
 			name: '',
-			joined: ''
+			joined: '',
+			password: '',
+			fullname: '',
+			groupId: '' //права
 		}
 	});	
 
@@ -36,6 +39,40 @@ define('root/users/Users', [
 	})
 
 	var users = new Users();
+
+	var Toolbar = Marionette.ItemView.extend({
+		template: '#user-toolbar-template',
+		tagName: 'div',
+		className: 'btn-group btn-group-vertical',
+		events: {
+			'click .btn-new': 'onCreateUserClick'
+		},
+		onCreateUserClick: function() {
+				
+			var formRegionId = '';
+			var modalWindow = $('#myModal');
+
+			modalWindow.modal({show: true});
+			modalWindow.find('.modal-title').html("Создание пользователя");
+			modalWindow.find('.modal-body').children().each(function() {
+
+				formRegionId = _.isString(Create.Region.el) ?
+							   Create.Region.el: "#" + $(Create.Region.el).attr("id");
+
+				if (("#" + $(this).attr("id")) != formRegionId) {
+					$(this).css('display', 'none');
+				} else {
+					$(this).css('display', 'block');
+				}
+			});
+
+			var createView = new Create.View({
+				model: new User()
+			});
+
+			Create.Region.show(createView);
+		}
+	})
 
 	var Controller = Marionette.Controller.extend({
 		showUserList: function(region) {
@@ -50,6 +87,9 @@ define('root/users/Users', [
 	});
 
 	return {
-		Controller: Controller
+		Controller: Controller,
+		Toolbar: Toolbar,
+		Model: User,
+		Collection: users
 	}
 });
