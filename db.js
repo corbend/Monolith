@@ -8,6 +8,8 @@ var User = require('./models/User');
 var startup = require('./startup').startDB;
 var mongoHost = process.env.OPENSHIFT_MONGODB_DB_HOST;
 var mongoPort = process.env.OPENSHIFT_MONGODB_DB_PORT;
+var mongoUsername = "admin" || process.env.OPENSHIFT_MONGODB_DB_USERNAME;
+var mongoPassword = "F8DsrVgDCPQn" || process.env.OPENSHIFT_MONGODB_DB_PASSWORD;
 
 function init(configObject, outerCallback) {
 
@@ -25,8 +27,9 @@ function init(configObject, outerCallback) {
 			//OPENSHIFT setup
 			if (mongoHost && mongoPort) {
 				connectionString = [
-					process.env.OPENSHIFT_MONGODB_DB_USERNAME, ':',
-					process.env.OPENSHIFT_MONGODB_DB_PASSWORD, '@',
+					'mongodb://',
+					mongoUsername, ':',
+					mongoPassword, '@',
 					mongoHost, ":", mongoPort, "/", "monolith"
 				].join("");
 			}
