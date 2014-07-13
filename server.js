@@ -51,8 +51,8 @@ db.init(config, function(err, config) {
 	auth.route(app);
 	routing.route(app);
 
-	app.listen(PORT, function() {
-		console.log("Server is listening on port " + PORT);
-	});
+	var server = http.Server(app);
+
+	server.listen(PORT, HOST);
 });
 
