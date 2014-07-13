@@ -35,6 +35,6 @@ define('root/projects/Create', [
 
 	return {
 		View: View,
-		Region: new Region()
+		Region: Region
 	}
 });

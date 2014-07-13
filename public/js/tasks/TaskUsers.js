@@ -21,7 +21,6 @@ define('root/tasks/TaskUsers', [
       	onFormSaveClick: function(event) {
       		event.preventDefault();
       		event.stopPropagation();
-      		debugger;
         	controller.appendUser(this);
       	}
 	});

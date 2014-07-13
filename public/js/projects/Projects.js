@@ -49,12 +49,17 @@ define('root/projects/Projects', [
 			'click a[href="#js-project-create"]': 'onInfoActivate'
 		},
 		onInfoActivate: function(event) {
+
 			//когда активируется вкладка создания нового проекта
 
 			var createView = new Create.View({
 				model: new Project()
 			});
-			Create.Region.show(createView);
+
+			//FIXME - если создать единожды экземпляр региона в модуле то вьюха почем-то не появляется
+			var region = new Create.Region();
+			region.empty();
+			region.show(createView);
 
 			this.listenTo(createView, 'form:saved', function() {
 				projects.fetch({reset: true});
