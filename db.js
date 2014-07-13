@@ -6,8 +6,8 @@ var Project = require('./models/Project');
 var Task = require('./models/Task');
 var User = require('./models/User');
 var startup = require('./startup').startDB;
-var mongoHost = proccess.env.OPENSHIFT_MONGODB_DB_HOST;
-var mongoPort = proccess.env.OPENSHIFT_MONGODB_DB_PORT;
+var mongoHost = process.env.OPENSHIFT_MONGODB_DB_HOST;
+var mongoPort = process.env.OPENSHIFT_MONGODB_DB_PORT;
 
 function init(configObject, outerCallback) {
 
@@ -31,7 +31,7 @@ function init(configObject, outerCallback) {
 				].join("");
 			}
 
-			mongoose.connect();
+			mongoose.connect(connectionString);
 
 			var cn = mongoose.connection;
 
