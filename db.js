@@ -6,6 +6,8 @@ var Project = require('./models/Project');
 var Task = require('./models/Task');
 var User = require('./models/User');
 var startup = require('./startup').startDB;
+var mongoHost = proccess.env.OPENSHIFT_MONGODB_DB_HOST;
+var mongoPort = proccess.env.OPENSHIFT_MONGODB_DB_PORT;
 
 function init(configObject, outerCallback) {
 
@@ -19,7 +21,17 @@ function init(configObject, outerCallback) {
 		},
 		function(configObject, cb) {
 			//коннектимся к базе
-			mongoose.connect(configObject.get('db_string'));
+			var connectionString = configObject.get('db_string');
+			//OPENSHIFT setup
+			if (mongoHost && mongoPort) {
+				connectionString = [
+					process.env.OPENSHIFT_MONGODB_DB_USERNAME, ':',
+					process.env.OPENSHIFT_MONGODB_DB_PASSWORD, '@',
+					mongoHost, ":", mongoPort, "/", "monolith"
+				].join("");
+			}
+
+			mongoose.connect();
 
 			var cn = mongoose.connection;
 

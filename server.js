@@ -1,5 +1,9 @@
 
-var PORT = process.env.PORT || 8080;
+var openShiftPort = process.env.OPENSHIFT_NODEJS_PORT;
+var openShiftHost = process.env.OPENSHIFT_NODEJS_IP;
+var PORT = openShiftPort || process.env.PORT || 8080;
+var HOST = openShiftHost || 'localhost';
+
 var http = require('http');
 var path = require('path');
 var nconf = require("./config");
