@@ -3,5 +3,6 @@
 	"db_name": "monolith",
 	"db_string": "mongodb://localhost/monolith",
 	"db_engine": "MongoDB",
-	"session_storage": "MongoStore"
+	"session_storage": "MongoStore",
+	"mediaDir": "media"
 }

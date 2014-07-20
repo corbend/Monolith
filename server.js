@@ -20,6 +20,7 @@ var startup = require("./startup");
 var routing = require("./routing");
 var auth = require("./auth/routing");
 var authSetup = require("./auth/middleware");
+var comments = require('./comments/routing');
 var app = express();
 
 var config;
@@ -50,7 +51,8 @@ db.init(config, function(err, config) {
 	authSetup.init(app);
 	auth.route(app);
 	routing.route(app);
-
+	comments.route(app);
+	
 	var server = http.Server(app);
 
 	server.listen(PORT, HOST);

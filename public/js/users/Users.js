@@ -23,6 +23,7 @@ define('root/users/Users', [
 	});
 		
 	var User = Backbone.Model.extend({
+		idAttribute: '_id',
 		urlRoot: 'users',
 		defaults: {
 			name: '',

@@ -1,8 +1,11 @@
 define('root/projects/Projects', [
 	'jquery', 'underscore', 'backbone', 'backbone.marionette',
-	'root/projects/Create'
+	'root/projects/Create',
+	'root/projects/Materials',
+	'root/comments/Comments',
+	'root/projects/Files'
 ], function($, _, Backbone, Marionette, 
-	Create
+	Create, Materials, Comments, Files
 ) {"use strict";
 
 	var ProjectStatuses = [
@@ -14,11 +17,12 @@ define('root/projects/Projects', [
 		urlRoot: 'projects',
 		defaults: {
 			name: '',
-			shortDescription: '',
-			startedTime: 0,
-			endedTime: 0,
-			progress: '0%',
-			status: 'START'
+			description: '',
+			projectText: '',
+			created: 0,
+			closed: 0,
+			progress: 0,
+			status: 1
 		}
 	});
 
@@ -32,8 +36,44 @@ define('root/projects/Projects', [
 	var ProjectItem = Marionette.ItemView.extend({
 		template: '#project-item-template',
 		tagName: 'tr',
+		ui: {
+			selectBox: 'input[type="checkbox"]'
+		},
 		events: {
-			'click .btn': 'onShowTaskBtnClick'
+			'click .btn': 'onShowTaskBtnClick',
+			'click input[type="checkbox"]': 'onSelectProject'
+		},
+		modelEvents: {
+			'change:selected': 'onSelect' 
+		},
+		templateHelpers: {
+			'getStartedTime': function() {
+				return new Date(this.created).toLocaleString();
+			}
+		},
+		onSelect: function(model, val) {
+
+			if (val) {
+				this.ui.selectBox.attr('checked', 'checked');
+				this.$el.addClass('active');
+			} else {
+				this.ui.selectBox.removeAttr('checked');
+				this.$el.removeClass('active');
+			}
+		},
+		onSelectProject: function(event) {
+
+			var selectedModel = this.model;
+			selectedModel.set('selected', !selectedModel.get('selected'));
+
+			this.trigger('item:select', selectedModel);
+
+			selectedModel.collection.forEach(function(m) {
+				if (m !== selectedModel) {
+					m.set('selected', false);
+				}
+			});
+
 		},
 		onShowTaskBtnClick: function(e) {
 			this.trigger('show:task', this.model);
@@ -46,9 +86,12 @@ define('root/projects/Projects', [
 		childView: ProjectItem,
 		childViewContainer: 'tbody',
 		events: {
-			'click a[href="#js-project-create"]': 'onInfoActivate'
+
+			'click a[href="#js-project-create"]': 'onInfoTabActivate',
+			'click a[href="#js-project-content"]': 'onMaterialTabActivate',
+			'click a[href="#js-project-files"]': "onFilesTabActivate", 
 		},
-		onInfoActivate: function(event) {
+		onInfoTabActivate: function(event) {
 
 			//когда активируется вкладка создания нового проекта
 
@@ -64,24 +107,54 @@ define('root/projects/Projects', [
 			this.listenTo(createView, 'form:saved', function() {
 				projects.fetch({reset: true});
 			}, this);
+		},
+		onMaterialTabActivate: function(event) {
+
+			var selectedProject = this.getSelected();
+
+			Materials.Controller.showLayout();
+
+			this.trigger('tab:material:activate', selectedProject);
+
+		},
+		onFilesTabActivate: function(event) {
+
+			var selectedProject = this.getSelected();
+			this.trigger('tab:files:activate', selectedProject);
+		},
+		getSelected: function() {
+			var selected = this.collection.filter(function(m) {
+				return m.get('selected');
+			});
+
+			return selected.length ? selected[0]: null;
 		}
 	});
 
 	var Toolbar = Marionette.ItemView.extend({
 		template: '#project-toolbar-template',
 		tagName: 'div',
-		className: 'btn-group btn-group-vertical'
+		className: 'btn-group btn-group-vertical',
+		triggers: {
+			'click .btn-default': 'texteditor:show'
+		}
 	})
 
 	var Controller = Marionette.Controller.extend({
 		initialize: function(App) {
 			this.App = App;
+			this.Comments = Comments;
+			this.Materials = Materials;
+			this.Files = Files;
+			this.Comments.Controller = new Comments.Controller(App);
+			this.Files.Controller = new Files.Controller(App);
 		},
 		getProjectById: function(id) {
 			return projects.get(id);
 		},
 		showProjects: function(contentRegion) {
 
+			var scope = this;
 			var projectView = new ProjectView({
 				collection: projects
 			});
@@ -89,6 +162,42 @@ define('root/projects/Projects', [
 			projectView.on('childview:show:task', function(childView, projectModel) {
 				this.App.trigger("project:show:task", projectModel.id, contentRegion);
 			}, this);
+
+			this.listenTo(projects, 'change:selected', function(projectModel, value) {
+
+				if (value) {
+					console.log("SELECT PROJECT");
+					console.log(projectModel);
+					this.App.trigger("project:select", projectModel);
+					this.Comments.Controller.showProjectCommentsList(projectModel);
+					this.Files.Controller.showFiles(projectModel);
+					this.Materials.Controller.setProject(projectModel);
+					this.Materials.Controller.showLayout();
+				}
+			}, this);
+
+
+			projectView.on('tab:material:activate', function(selectedProject) {
+				console.log("Activate Materials");
+				if (selectedProject) {
+					scope.Comments.Controller.showProjectCommentsList(selectedProject);
+				} else {
+					scope.Comments.Controller.showWarningMessage();
+				}
+
+				scope.Materials.Controller.showLayout();
+
+			}, this);
+
+			projectView.on('tab:files:activate', function(selectedProject) {
+				if (selectedProject) {
+					scope.Files.Controller.showFiles(selectedProject);
+				}
+			});
+
+			projectView.on('show', function() {
+				scope.Materials.Controller.showLayout();
+			});
 
 			return projectView;
 		},

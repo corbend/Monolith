@@ -107,7 +107,6 @@ table th {
 
 table tr td:first-child {
 	width: 50px;
-	padding: 0;
 }
 
 table tr {
@@ -228,4 +227,75 @@ table tr {
 
 .append-user-form ul {
 	height: 100%;
+}
+
+#project-text-editor-region {
+	float: left;
+	width: 100%;
+	height: 420px;
+	z-index: 999;
+}
+
+#project-text-block-region {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 50%;
+	height: 420px;
+	overflow-y: auto;
+	z-index: 0;
+}
+
+
+/*CONTENT*/
+
+.content-materials {
+	width: 100%;
+}
+
+/*COMMENTS*/
+
+#comment-block {
+	float: right;
+	width: 50%;
+	min-width: 400px;
+	height: 400px;
+}
+
+#project-content-region {
+	float: left;
+	width: 50%;
+}
+
+#project-comment-region {
+	width: 100%;
+	height: 60%;
+	overflow: scroll;
+}
+
+#project-comment-region ul {
+	min-height: 300px;
+}
+
+#comment-create-region {
+	width: 100%;
+	height: 40%;
+}
+
+table .active {
+	background-color: #d9edf7;
+}
+
+.save-text-button {
+	clear: left;
+	width: 200px;
+}
+
+.edit-text-button {
+	clear: left;
+	width: 200px;
+}
+
+.file-list {
+	min-height: 420px;
 }

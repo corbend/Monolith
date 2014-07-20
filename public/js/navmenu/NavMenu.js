@@ -6,7 +6,8 @@ define('root/navmenu/NavMenu', [
 		defaults: {
 			name: 'Пункт меню',
 			position: 0,
-			showCounter: false
+			showCounter: false,
+			count: 0
 		}
 	});
 

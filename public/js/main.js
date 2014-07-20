@@ -3,7 +3,8 @@ requirejs.config({
 	paths: {
 		'root'		: '../js',
 		'project'	: '../js',
-		'bootstrap' : '../vendor/bootstrap/js/bootstrap'
+		'bootstrap' : '../vendor/bootstrap/js/bootstrap',
+		'epiceditor': 'epiceditor'
 	},
 	shim: {
 		'jquery': {
@@ -23,6 +24,9 @@ requirejs.config({
 		'bootstrap': {
 			deps: ['jquery'],
 			exports: 'bootstrap'
+		},
+		'epiceditor': {
+			exports: 'EpicEditor'
 		}
 	}
 });

@@ -14,6 +14,18 @@ define('root/MainApp', [
 		mainRegion: '#main-region'
 	});
 
+	App.getProjectCount = _.bind(function() {
+		return this.Project.Collection.length;
+	}, App);
+
+	App.getTaskCount = _.bind(function() {
+		return this.Task.Collection.length;;
+	}, App);
+
+	App.getUserCount = _.bind(function() {
+		return this.User.Collection.length;;
+	}, App)
+
 	var Router = Marionette.AppRouter.extend({
 		appRoutes: {
 			'/projects'				: 'showProjects',
@@ -23,12 +35,15 @@ define('root/MainApp', [
 
 	App.addInitializer(function() {
 		this.Project = {
+			Collection: Project.Collection,
 			Controller: new Project.Controller(App)
 		}
 		this.Task = {
+			Collection: Task.Collection,
 			Controller: new Task.Controller(App)
 		}
 		this.User = {
+			Collection: User.Collection,
 			Controller: new User.Controller(App)
 		}
 	})
@@ -45,6 +60,23 @@ define('root/MainApp', [
 			App.mainRegion.show(layout);
 
 			var menuRegion = new MenuRegion();
+
+			NavMenu.Collection.forEach(function(mi) {
+
+				switch (mi.get('position')) {
+					case 1:
+						mi.set('count', App.getProjectCount());
+						break;
+					case 2:
+						mi.set('count', App.getTaskCount());
+						break;
+					case 3:
+						break;
+					case 4:
+						mi.set('count', App.getUserCount());
+						break;
+				}
+			})
 
 			var menuView = new NavMenu.View({
 				collection: NavMenu.Collection
@@ -79,8 +111,8 @@ define('root/MainApp', [
 					layout.contentRegion.show(App.Project.Controller.showProjects(layout.contentRegion));
 				}
 			})
-
-			layout.toolbarRegion.show(new Project.Toolbar());
+			var toolbar = new Project.Toolbar();
+			layout.toolbarRegion.show(toolbar);
 		},
 		showTasks: function(projectId, layout) {
 
@@ -105,7 +137,44 @@ define('root/MainApp', [
 		this.Router = new Router({
 			controller: GenericAPI
 		})
-	})
+	});
+
+	App.addInitializer(function() {
+		$.when(true).then(function() {
+			var df = $.Deferred();
+			User.Collection.fetch({
+				success: function() {
+					df.resolve();
+				}
+			});
+			return df.promise();
+		}).then(function() {
+			var df = $.Deferred();
+			Project.Collection.fetch({
+				success: function() {
+					df.resolve();
+				}
+			});
+			return df.promise();
+		}).then(function() {
+			var df = $.Deferred();
+			Task.Collection.fetch({
+				success: function() {
+					df.resolve();
+				}
+			});
+			return df.promise();
+		}).done(function() {
+
+			$(function() {
+				Backbone.history.start();
+				GenericAPI.showProjects();
+			});
+
+		}).fail(function() {
+			console.log("error loading collections!");
+		});
+	});
 
 	var Layout = Marionette.LayoutView.extend({
 		template: '#main-layout',
@@ -120,11 +189,11 @@ define('root/MainApp', [
 		}
 	});
 
-	App.on('start', function() {
-		Backbone.history.start();
+	// App.on('start', function() {
+	// 	Backbone.history.start();
 
-		GenericAPI.showProjects();
-	});
+	// 	GenericAPI.showProjects();
+	// });
 
 	return App;
 })

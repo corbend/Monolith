@@ -151,6 +151,7 @@ define('root/tasks/Task', [
 	});
 
 	return {
+		Collection: taskCollection,
 		Controller: Controller,
 		Toolbar: Toolbar
 	}

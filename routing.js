@@ -1,4 +1,10 @@
 var crypto = require('crypto');
+var fs = require('fs');
+var conf = require('nconf');
+var path = require('path');
+var mv = require('mv');
+var uuid = require('node-uuid');
+var mgs = require('mongoose');
 
 var Project = require('./models/Project').Project;
 var Task = require('./models/Task').Task;
@@ -24,14 +30,32 @@ exports.route = function(eApp) {
 	});
 
 	eApp.get('/projects', function(req, res) {
+		console.log("PAGING=" + req.body.page);
+		console.log("LIMIT=" + req.body.limit);
 
-		Project.find(function(err, projects) {
-			if (err) {
-				console.log(err);
-			} else {
-				res.send(projects);
-			}
-		});
+		if (req.body.page && req.body.limit) {
+			//TODO - pagination
+		} 
+		else if (req.body.filterQuery) {
+			//фильтрация по имени или номеру задачи/проекта
+			Project.find({name: req.body.filterQuery})
+			.or({number: req.body.filterQuery})
+			.exec(function(err, projects) {
+				if (!err) {
+					res.send(projects);
+				}
+			})
+		} else {
+			Project.find(function(err, projects) {
+				console.log("PROJECTS");
+				console.log(projects);
+				if (err) {
+					console.log(err);
+				} else {
+					res.send(projects);
+				}
+			});
+		}
 	});
 
 	eApp.post('/projects', function(req, res) {
@@ -42,6 +66,82 @@ exports.route = function(eApp) {
 		m.save(function(err, model) {
 			res.send(model);
 		});
+	});
+
+	eApp.post(/\/projects\/(.*)\/files$/, function(req, res) {
+		Project.find(req.params[0], function(err, project) {
+			if (!err) {
+				console.log(req.body);
+				//TODO - проверка на существование файла
+				var fileName = req.body.name || "file" + uuid.v4();
+				var pathToFile = path.join(__dirname, conf.get('mediaDir'), fileName);
+				var files = [];
+
+				if (!fs.existsSync(pathToFile) && project) {
+
+					if (!project.files) {
+						project.files = [];
+					}
+					console.log("FILE->");
+					console.log(req.files);
+					for (var f in req.files) {
+						console.log("FILE->");
+						console.log(req.files[f]);
+						files.push(fileName);
+						var tempPath = req.files[f].path;
+
+						mv(tempPath, pathToFile, function(err) {
+					        if (err) throw err;
+				            
+					        Project.findOneAndUpdate(
+								{_id: project._id},
+								{$set: {files: files}}, function(err, updated) {
+								if (!err) {
+									res.send({success: true, message: 'Файл успешно добавлен!'});
+								} else {
+									res.render('error', {status: 500});
+								}
+							});
+					    });
+					}
+
+				} else {
+					res.send({success: true, message: 'Файл с таким именем существует!'});
+				}
+
+			} else {
+				res.render('error', {status: 500});
+			}
+		});
+	});
+
+	eApp.get(/\/projects\/(.*)\/files$/, function(req, res) {
+		
+		Project.find(req.params[0], function(err, project) {
+			if (err) {
+				res.render('error', {status: 500});
+			} else {
+				if (project) {
+					res.send(JSON.stringify(project.files || []));
+				}
+			}
+		});
+	});
+
+	eApp.put('/projects/:id', function(req, res) {
+		var projectId = req.params.id;
+
+		Project.findOneAndUpdate(projectId, {$set: req.body},
+			function(err, projectToUpdate) {
+
+				if (!err && projectToUpdate) {
+					return res.send(projectToUpdate);
+				} else {
+					console.log(err);
+					res.render('error', {status: 500});
+				}
+			}
+		);
 	});
 
 	eApp.get('/tasks', function(req, res) {
@@ -115,8 +215,6 @@ exports.route = function(eApp) {
 			res.send(model);
 		});
 	});
-
-
 
 	eApp.get('/users', function(req, res) {
 		User.find(function(err, users) {

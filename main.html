@@ -8,10 +8,12 @@
 		<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.css"/>
 
 		<link rel="stylesheet" type="text/css" href="css/main.css"/>
+		<script type="text/javascript" src="lib/epiceditor.js"></script>
 		<script type="text/javascript" data-main="js/main" src="lib/require.js"></script>
 	</head>
 
 	<body>
+		
 		<div id="navbar" class="navbar navbar-inverse">
 			<div class="col-md-6">
 				<div id="main-menu-region"></div>
@@ -72,7 +74,7 @@
 	<script id="menu-item-template" type="text/template">
 		<a><%=name%></a>
 		<% if (showCounter) {%>
-		<div class="badge">0</div>
+		<div class="badge"><%=count%></div>
 		<% } %>
 	</script>
 
@@ -86,7 +88,7 @@
 		<td><button class="expand-project btn btn-success">Задачи</button></td>
 		<td><%=name%></td>
 		<td><%=description%></td>
-		<td><%=startedTime%></td>
+		<td><%=getStartedTime()%></td>
 		<td>
 			<div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
 				<span class="sr-only">40% Complete (success)</span>
@@ -110,7 +112,7 @@
 				<thead>
 					<tr>
 						<th><input type="checkbox"></th>
-						<th><button class="btn btn-success">+</button></th>
+						<th></th>
 						<th>Название</th>
 						<th>Описание</th>
 						<th>Начат</th>
@@ -123,16 +125,40 @@
 			</div>
 			<div class="project-info panel panel-default">
 				<ul class="nav nav-tabs" role="tablist">
-					<li class="active"><a href="#project-analyze" role="tab" data-toggle="tab">Статистика</a></li>
-					<li><a href="#project-content" role="tab" data-toggle="tab">Описание</a></li>
+					<li class="active"><a href="#js-project-content" role="tab" data-toggle="tab">Описание</a></li>
+					<li><a href="#js-project-files" role="tab" data-toggle="tab">Файлы</a></li>
 					<li><a href="#project-workers" role="tab" data-toggle="tab">Участники</a></li>
 					<li><a href="#project-journal" role="tab" data-toggle="tab">Журнал</a></li>
 					<li><a href="#project-print" role="tab" data-toggle="tab">Отчет</a></li>
 					<li><a href="#js-project-create" role="tab" data-toggle="tab">Создать</a></li>
+					<li><a href="#project-analyze" role="tab" data-toggle="tab">Статистика</a></li>
 					<li><a href="#js-project-archive" role="tab" data-toggle="tab">Архивация</a></li>
 				</ul>
 				<div class="tab-content">
-					<div id="project-analyze" class="tab-pane active">
+					
+					<div id="js-project-content" class="tab-pane active">
+
+						<div id="project-content-region">
+
+						</div>
+
+						<div id="comment-block">
+							<h2>Комментарии</h2>
+							<div id="project-comment-region">
+							</div>
+							<div id="comment-create-region">
+							</div>
+						</div>
+					</div>
+					<div id="js-project-files" class="tab-pane"></div>
+					<div id="project-workers" class="tab-pane"></div>
+					<div id="project-journal" class="tab-pane"></div>
+					<div id="project-report" class="tab-pane"></div>
+					<div id="js-project-create" class="tab-pane">
+						<div id="create-project-region">
+						</div>
+					</div>
+					<div id="project-analyze" class="tab-pane">
 						<div class="row"><label class="col-md-2">Статус проекта</label></div>
 						<div class="row"><label class="col-md-2">Общий процент выполнения</label></div>
 						<div class="row"><label class="col-md-2">Примерный срок окончания</label></div>
@@ -144,14 +170,6 @@
 						<div class="row"><label class="col-md-2">Задач без исполнителя</label></div>
 						<div class="row"><label class="col-md-2">Задач без ответов</label></div>
 					</div>
-					<div id="project-content" class="tab-pane"></div>
-					<div id="project-workers" class="tab-pane"></div>
-					<div id="project-journal" class="tab-pane"></div>
-					<div id="project-report" class="tab-pane"></div>
-					<div id="js-project-create" class="tab-pane">
-						<div id="create-project-region">
-						</div>
-					</div>
 					<div id="js-project-archive" class="tab-pane">
 					</div>
 				</div>
@@ -160,11 +178,11 @@
 	</script>
 
 	<script id="task-toolbar-template" type="text/template">
-		<div class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-th-large"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div>
+		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-plus"></span></div>
+		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-pencil"></span></div>
+		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-minus"></span></div>
+		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-th-large"></span></div>
+		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-list"></span></div>
 
 	</script>
 	<script id="project-toolbar-template" type="text/template">
@@ -265,6 +283,26 @@
 		</form>
 	</script>
 
+	<script id="project-content-template" type="text/template">
+		<div id="project-file-block-region">
+		</div>
+		<div id="project-text-editor-region">
+		</div>
+		<div class="edit-text-button btn btn-success">
+			Редактировать
+		</div>
+		<div class="save-text-button btn btn-success">
+			Сохранить текст
+		</div>
+	</script>
+
+	<script id="file-block-template" type="text/template">
+	</script>
+	<script id="text-block-template" type="text/template">
+	</script>
+	<script id="text-editor-template" type="text/template">
+	</script>
+
 	<script id="create-task-template" type="text/template">
 		<form>
 			<div class="col-md-12" style="height: 400px;">
@@ -335,6 +373,47 @@
 	</script>
 
 	<script id="task-user-form-template" type="text/template">
+	</script>
+
+	<script id="comment-item-template" type="text/template">
+		<span class="col-md-4"><%= getLocalTime()%></span>
+		<span class="col-md-6"><%= getAuthorName()%></span>
+		<div class="text-block">
+			<%=text%>
+		</div>
+	</script>
+
+	<script id="create-comment-template" type="text/template">
+		<form>
+			<div class="input-group col-md-12">
+				<span class="input-group-addon">Текст</span>
+				<textarea name="text" class="form-control"></textarea>
+			</div>
+			<!--CAPTCHA-->
+			<div class="save-button btn btn-success">
+				Добавить
+			</div>
+		</form>
+	</script>
+
+	<script id="empty-warning-template" type="text/template">
+		<h1>Выберите проект из списка.</h1>
+	</script>
+
+	<script id="file-upload-template" type="text/template">
+		<form enctype="multipart/form-data" method="POST">
+			<input type="file" name="addFile" class="multi" multiple/>
+			<button class="btn btn-success">Добавить файл</button>
+		</form>
+	</script>
+
+	<script id="file-item-template" type="text/template">
+		<a href="<%'/images/' + name %>"><%=name></a>
+	</script>
+
+	<script id="files-layout-template" type="text/template">
+		<div id="file-upload-region"></div>
+		<div id="file-list-region"></div>
 	</script>
 
 </html>
