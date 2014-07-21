@@ -14,22 +14,24 @@ define('root/projects/Files', [
 			uploadForm: 'form',
 			uploadButton: 'button'
 		},
-		// events: {
-		// 	'click button': 'onFileAddClick'
-		// },
 		triggers: {
 			'click button': 'file:add'
 		},
-		// onFileAddClick: function(event) {
-		// 	event.preventDefault();
-		// 	this.trigger('file:add');
-		// }
 	});
 
 	var FileListItem = Marionette.ItemView.extend({
 		template: '#file-item-template',
 		tagName: 'li',
-		className: 'list-group-item'
+		className: 'list-group-item',
+		events: {
+			'click a': 'onLinkClick'
+		},
+		onLinkClick: function(event) {
+
+			event.preventDefault();
+			
+			window.open($(event.target).attr("href")); 
+		}
 	});
 
 	var FileListView = Marionette.CollectionView.extend({
@@ -50,6 +52,7 @@ define('root/projects/Files', [
 		urlRoot: 'files',
 		defaults: {
 			name: '',
+			href: '',
 			added: 0
 		}
 	});
@@ -83,6 +86,7 @@ define('root/projects/Files', [
 					layout.fileListRegion.show(new FileListView({
 						collection: files
 					}));
+
 					scope.listenTo(fileUploader, 'file:add', function(itemView) {
 
 						var fileField = fileUploader.ui.uploadForm.find('input');

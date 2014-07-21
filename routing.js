@@ -69,60 +69,60 @@ exports.route = function(eApp) {
 	});
 
 	eApp.post(/\/projects\/(.*)\/files$/, function(req, res) {
-		Project.find(req.params[0], function(err, project) {
-			if (!err) {
-				console.log(req.body);
-				//TODO - проверка на существование файла
-				var fileName = req.body.name || "file" + uuid.v4();
-				var pathToFile = path.join(__dirname, conf.get('mediaDir'), fileName);
-				var files = [];
+		console.log(req.body);
+		//TODO - проверка на существование файла
+		var fileName = "file" + uuid.v4();
+		var pathToFile;
+		var projectId = req.params[0];
+		var files = [];
 
-				if (!fs.existsSync(pathToFile) && project) {
+		if (!fs.existsSync(pathToFile)) {
 
-					if (!project.files) {
-						project.files = [];
-					}
-					console.log("FILE->");
-					console.log(req.files);
-					for (var f in req.files) {
-						console.log("FILE->");
-						console.log(req.files[f]);
-						files.push(fileName);
-						var tempPath = req.files[f].path;
+			for (var f in req.files) {
+				console.log("FILE->");
+				console.log(req.files[f]);
+				fileName = req.files[f].originalFilename;
+				pathToFile = path.join(__dirname, conf.get('mediaDir'), fileName);
+				files.push(fileName);
+				var tempPath = req.files[f].path;
 
-						mv(tempPath, pathToFile, function(err) {
-					        if (err) throw err;
-				            
-					        Project.findOneAndUpdate(
-								{_id: project._id},
-								{$set: {files: files}}, function(err, updated) {
-								if (!err) {
-									res.send({success: true, message: 'Файл успешно добавлен!'});
-								} else {
-									res.render('error', {status: 500});
-								}
-							});
-					    });
-					}
-
-				} else {
-					res.send({success: true, message: 'Файл с таким именем существует!'});
-				}
-
-			} else {
-				res.render('error', {status: 500});
+				mv(tempPath, pathToFile, function(err) {
+			        if (err) throw err;
+			    });
 			}
-		});
+
+			Project.findById(projectId, function(err, project) {
+				if (!err) {
+					for (var f = 0; f < files.length; f++) {
+						project.files.addToSet(files[f]);
+					}
+					project.save();
+					res.send({success: true, message: 'Файл успешно добавлен!'});
+				} else {
+					res.render('error', {status: 500});
+				}
+			});
+
+		} else {
+			res.send({success: true, message: 'Файл с таким именем существует!'});
+		}
 	});
 
 	eApp.get(/\/projects\/(.*)\/files$/, function(req, res) {
-		
-		Project.find(req.params[0], function(err, project) {
+		var fileHrefs = [];
+
+		Project.findById(req.params[0], function(err, project) {
 			if (err) {
 				res.render('error', {status: 500});
 			} else {
 				if (project) {
-					res.send(JSON.stringify(project.files || []));
+					fileHrefs = project.files.map(function(f) {
+						return {
+							name: f,
+							href: f
+						}
+					});
+					res.send(JSON.stringify(fileHrefs || []));
 				}
 			}
 		});

@@ -41,6 +41,7 @@ db.init(config, function(err, config) {
 			}),
 			secret: '999'}));
 		app.use(express.static(path.join(__dirname, 'public')));
+		app.use(express.static(path.join(__dirname, config.get('mediaDir'))));
 		app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
 		app.use(passport.initialize());
 		app.use(passport.session());
