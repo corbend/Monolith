@@ -23,6 +23,7 @@
     "passport": ">=0.2.x",
     "passport-local": "1.0.0",
     "grunt-contrib-watch": ">=0.x",
-    "grunt-contrib-less": ">=0.x"
+    "grunt-contrib-less": ">=0.x",
+    "connect-flash": "*"
   }
 }
