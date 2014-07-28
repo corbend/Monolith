@@ -24,6 +24,10 @@ function isAuth(req, res, next) {
 
 exports.route = function(eApp) {
 
+	eApp.get('/start', function(req, res) {
+		res.render("start.jade");
+	});
+
 	eApp.get("/", isAuth, function(req, res) {
 		//FIXME - переместить файл в паблик
 		res.sendfile("main.html");
@@ -130,18 +134,24 @@ exports.route = function(eApp) {
 
 	eApp.put('/projects/:id', function(req, res) {
 		var projectId = req.params.id;
+		//удалим id чтобы небыло ошибки перезаписи immutable поля _id в MongoDB
+		if (req.body._id) {
+			delete req.body._id;
+		}
 
-		Project.findOneAndUpdate(projectId, {$set: req.body},
-			function(err, projectToUpdate) {
+		if (projectId) {
+			Project.findOneAndUpdate({_id: projectId}, {$set: req.body},
+				function(err, projectToUpdate) {
 
-				if (!err && projectToUpdate) {
-					return res.send(projectToUpdate);
-				} else {
-					console.log(err);
-					res.render('error', {status: 500});
+					if (!err && projectToUpdate) {
+						return res.send(projectToUpdate);
+					} else {
+						console.log(err);
+						res.render('error', {status: 500});
+					}
 				}
-			}
-		);
+			);
+		}
 	});
 
 	eApp.get('/tasks', function(req, res) {
@@ -151,6 +161,18 @@ exports.route = function(eApp) {
 				console.log(err);
 			} else {
 				res.send(tasks);
+			}
+		});
+	});
+
+	eApp.delete('/projects/:projectId/tasks/:taskId', function(req, res) {
+		console.log("DELETE TASK!");
+		console.log(req.params.taskId);
+		Task.remove(req.params.taskId, function(err, result) {
+			if (err) {
+				console.log(err);
+			} else {
+				res.send({message: '', success: true});
 			}
 		});
 	});
@@ -179,10 +201,10 @@ exports.route = function(eApp) {
 	eApp.put(/\/projects\/(.*)\/tasks\/(.*)/, function(req, res) {
 		var taskId = req.params[1];
 		console.log("UPDATE TASK!" + taskId);
-
+		delete req.body.id;
 		console.log(req.body);
 		console.log(req.body.users);
-		Task.update({_id: taskId}, {users: req.body.users}, function(err, taskUpdated) {
+		Task.update({_id: taskId}, {$set: req.body}, function(err, taskUpdated) {
 			if (err) {
 				res.send({success: false, error: err.message});
 			} else {

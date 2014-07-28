@@ -1,9 +1,11 @@
 define('root/tasks/Task', [
 	'jquery', 'underscore', 'backbone', 'backbone.marionette',
+	'backbone.picky',
 	'root/tasks/Create',
-	'root/tasks/TaskUsers'
-], function($, _, Backbone, Marionette,
-	Create, TaskUsers
+	'root/tasks/TaskUsers',
+	'root/tasks/Materials'
+], function($, _, Backbone, Marionette, Picky,
+	Create, TaskUsers, Materials
 ) {"use strict";
 		
 	var TaskItem = Marionette.ItemView.extend({
@@ -14,7 +16,14 @@ define('root/tasks/Task', [
 			'click .append-user': 'onTabUsersClick'
 		},
 		triggers: {
-			'click .append-user-btn': 'task:users:new' 
+			'click .append-user-btn'		: 'task:users:new',
+			'click .task-description-tab'	: 'task:description:show',
+			'click .task-header'			: 'task:select'
+		},
+		templateHelpers: {
+			getText: function() {
+				return (this.text && marked(this.text)) || '';
+			}
 		},
 		onTabUsersClick: function(event) {
 			this.trigger('task:users:show', event);
@@ -37,21 +46,30 @@ define('root/tasks/Task', [
 
 	var Task = Backbone.Model.extend({
 		idAttribute: '_id',
+		initialize: function() {
+			var selectable = new Backbone.Picky.Selectable(this);
+    		_.extend(this, selectable);
+		},
 		urlRoot: function() {
 			return "projects/" + this.get('projectId') + '/tasks';
 		},
 		defaults: {
 			name: 'Новая задача',
 			description: 'Введите описание задачи',
+			created: '',
 			started: '',
 			ended: '',
-			status: 'START',
-			progress: '0%'
+			status: 1,
+			progress: 0
 		}
 	});
 
 	var Tasks = Backbone.Collection.extend({
 		model: Task,
+		initialize: function() {
+			var singleSelect = new Backbone.Picky.SingleSelect(this);
+			_.extend(this, singleSelect);
+		},
 		url: function() {
 			return 'tasks'
 		}
@@ -62,27 +80,45 @@ define('root/tasks/Task', [
 	var Toolbar = Marionette.ItemView.extend({
 		template: '#task-toolbar-template',
 		tagName: 'div',
-		className: 'btn-group btn-group-vertical'
+		className: 'btn-group btn-group-vertical vertical-menu left-sidebar',
+		ui: {
+			createButton: '.create-task-button'
+		},
+		triggers: {
+			'click .create-task-button': 'create:task',
+			'click .delete-task-button': 'delete:task'
+		}
 	})
 
 	var Controller = Marionette.Controller.extend({
 		initialize: function(App) {
 
 			this.App = App;
+			this.Materials = {
+			 	Controller: new Materials.Controller(App)
+			}
 
 			this.App.on('project:show:task', function(projectId, contentRegion) {
 				this.App.Router.navigate('/projects/' + projectId + '/tasks');
-				this.showTasks(projectId, contentRegion);
+				this.App.Api.showTasks(projectId, contentRegion);
 			}, this);
 
 			this.App.on('task:create', function(projectId) {
 				this.App.Router.navigate('/projects/' + projectId + 'tasks/create');
 				this.createTask(projectId);
 			}, this);
+
 		},
 		createTask: function(projectId) {
+
+			console.log("CREATE TASK!");
+
 			var createTaskView = new Create.View({
 				model: new Task()
+			});
+
+			$('#myModal').modal({
+				show: true
 			});
 
 			Create.Region.show(createTaskView);
@@ -90,14 +126,18 @@ define('root/tasks/Task', [
 			createTaskView.once('form:before:save', function(model) {
 				model.set('projectId', projectId);
 			});
+			createTaskView.once('form:after:save', function(model) {
+				taskCollection.add(model);
+			});
 		},
-		showTasks: function(projectId, region) {
+		showTasks: function(project, region) {
 			var scope = this;
-					
+			var projectId = project && project.id;	
 			//готовим фильтрующую коллекцию
 			var ProjectTasks, projectTasks;
 
 			if (projectId) {
+
 				ProjectTasks = Tasks.extend({
 					url: function() {
 						return 'projects/' + projectId + "/tasks";
@@ -105,6 +145,26 @@ define('root/tasks/Task', [
 				});
 				
 				projectTasks = new ProjectTasks();
+
+				projectTasks.listenTo(taskCollection, 'add', function(models) {
+					projectTasks.add(models);
+				}, projectTasks);
+
+				projectTasks.listenTo(taskCollection, 'remove', function(models) {
+					projectTasks.remove(models);
+				}, projectTasks);
+
+				projectTasks.listenTo(taskCollection, 'sync', function(models) {
+					projectTasks.fetch();
+				}, projectTasks);
+
+				projectTasks.listenTo(taskCollection, 'reset', function(models) {
+					projectTasks.reset(models);
+				});
+
+				projectTasks.on('destroy', function() {
+					projectTasks.stopListening(taskCollection);
+				});
 
 			} else {
 				projectTasks = taskCollection;
@@ -121,11 +181,6 @@ define('root/tasks/Task', [
 
 					//если нажали на кнопку создания нового таска
 					taskListView.on('task:create', function(event) {
-
-						$('#myModal').modal({
-							show: true
-						});
-
 						scope.App.trigger('task:create', projectId);
 					}, scope);
 
@@ -144,6 +199,36 @@ define('root/tasks/Task', [
 						scope.App.Router.navigate('tasks/' + taskId + '/users/new');
 						TaskUsers.Controller.showAppendForm(taskView.model);
 					}, scope);
+
+					taskListView.on('childview:task:description:show', function(taskItemView, event) {
+
+						scope.Materials.Controller.workOn(taskItemView, taskItemView.model);
+					});
+
+					taskListView.on('childview:task:select', function(taskItemView, event) {
+
+						taskItemView.model.select();
+					});
+
+					//выбор записи
+					taskListView.listenTo(taskCollection, 'select:one', function(model) {
+						debugger;
+						if (model) {
+							var selectView = taskListView.children.findByModel(model);
+							selectView.$el.toggleClass('active');
+							scope.App.Task.Selection.set('target', model);
+						}
+					}, this);
+
+					taskListView.listenTo(taskCollection, 'deselect:one', function(model) {
+						var selectView = taskListView.children.findByModel(model);
+						if (selectView) {
+							selectView.$el.removeClass('active');
+							scope.App.Task.Selection.set('target', null);
+						}
+					}, this);
+
+					// Materials.Controller.showMaterials();
 				}
 			})
 				

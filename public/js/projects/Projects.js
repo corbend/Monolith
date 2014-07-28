@@ -1,11 +1,12 @@
 define('root/projects/Projects', [
 	'jquery', 'underscore', 'backbone', 'backbone.marionette',
 	'root/projects/Create',
+	'root/projects/Edit',
 	'root/projects/Materials',
 	'root/comments/Comments',
 	'root/projects/Files'
 ], function($, _, Backbone, Marionette, 
-	Create, Materials, Comments, Files
+	Create, Edit, Materials, Comments, Files
 ) {"use strict";
 
 	var ProjectStatuses = [
@@ -82,7 +83,7 @@ define('root/projects/Projects', [
 
 	var ProjectView = Marionette.CompositeView.extend({
 		template: '#projects-list-template',
-		className: 'panel panel-info',
+		className: 'panel panel-normal',
 		childView: ProjectItem,
 		childViewContainer: 'tbody',
 		events: {
@@ -134,9 +135,10 @@ define('root/projects/Projects', [
 	var Toolbar = Marionette.ItemView.extend({
 		template: '#project-toolbar-template',
 		tagName: 'div',
-		className: 'btn-group btn-group-vertical',
+		className: 'btn-group btn-group-vertical vertical-menu left-sidebar',
 		triggers: {
-			'click .btn-default': 'texteditor:show'
+			'click .btn-default': 'texteditor:show',
+			'click .edit-project-button': 'project:edit'
 		}
 	})
 
@@ -152,6 +154,17 @@ define('root/projects/Projects', [
 		getProjectById: function(id) {
 			return projects.get(id);
 		},
+		editProject: function(project) {
+			var editView = new Edit.View({
+				model: project
+			});
+
+			editView.render();
+
+			this.listenTo(editView, 'form:saved', function() {
+				projects.fetch({reset: true});
+			}, this);
+		},
 		showProjects: function(contentRegion) {
 
 			var scope = this;
@@ -163,6 +176,7 @@ define('root/projects/Projects', [
 				this.App.trigger("project:show:task", projectModel.id, contentRegion);
 			}, this);
 
+			//TODO - проверить на зомби представления
 			this.listenTo(projects, 'change:selected', function(projectModel, value) {
 
 				if (value) {

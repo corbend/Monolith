@@ -1,0 +1,22 @@
+script(type="text/template", id="feature-template")
+	div.panel.panel-normal
+		div.panel-heading
+			span.symbolic I
+			span <%=title%>
+			span.symbolic I
+		div.panel-body
+			div.trademark-border
+				span.trademark <%=name%>
+			span.product-description<%=description%>
+		div.panel-footer
+			div.controls
+				ul
+					li
+						div.btn-wrap
+							button.btn.btn-success Попробовать
+					li
+						div.btn-wrap
+							button.btn.btn-success Подробнее
+					li
+						div.btn-wrap
+							button.btn.btn-success Заказать

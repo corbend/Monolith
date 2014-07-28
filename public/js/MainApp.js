@@ -1,10 +1,11 @@
 define('root/MainApp', [
 	'jquery', 'underscore', 'backbone', 'backbone.marionette',
+	'root/service/Selection',
 	'root/navmenu/NavMenu',
 	'root/projects/Projects',
 	'root/tasks/Task',
 	'root/users/Users'
-], function($, _, Backbone, Marionette,
+], function($, _, Backbone, Marionette, Selection,
 	NavMenu, Project, Task, User
 ) {"use strict";
 		
@@ -26,6 +27,25 @@ define('root/MainApp', [
 		return this.User.Collection.length;;
 	}, App)
 
+	//SELECTION MECHANISM--
+
+	App.SingleSelection = Selection.Single;
+	App.MultiSelection = Selection.Multi;
+
+	App.getSelection = _.bind(function() {
+		this.SingleSelection.get('target');
+	}, App);
+
+	App.listenTo(App.SingleSelection, 'change:target', function() {
+
+	});
+	//--SELECTION MECHANISM
+
+	App.listenTo(App.MultiSelection, 'change', function() {
+		//TODO - stub;
+	});
+
+
 	var Router = Marionette.AppRouter.extend({
 		appRoutes: {
 			'/projects'				: 'showProjects',
@@ -42,10 +62,17 @@ define('root/MainApp', [
 			Collection: Task.Collection,
 			Controller: new Task.Controller(App)
 		}
+		this.Task.Selection = Selection.Task;
+
 		this.User = {
 			Collection: User.Collection,
 			Controller: new User.Controller(App)
 		}
+
+
+		this.Project.Controller.listenTo(App, 'project:edit', function(selectedProject) {
+			this.editProject(selectedProject);	
+		}, this.Project.Controller);
 	})
 
 	var MenuRegion = Marionette.Region.extend({
@@ -106,23 +133,58 @@ define('root/MainApp', [
 		showProjects: function(layout) {
 			var layout = layout || this.createMainLayout();
 
-			Project.Collection.fetch({
-				success: function() {
-					layout.contentRegion.show(App.Project.Controller.showProjects(layout.contentRegion));
-				}
-			})
 			var toolbar = new Project.Toolbar();
 			layout.toolbarRegion.show(toolbar);
-		},
-		showTasks: function(projectId, layout) {
 
-			var layout = layout || this.createMainLayout();
+			Project.Collection.fetch({
+				success: function() {
+					var projectView = App.Project.Controller.showProjects(layout.contentRegion);
+					layout.contentRegion.show(projectView);
+
+					toolbar.on('project:edit', function() {
+						var selectedProject = projectView.getSelected();
+						if (selectedProject) {
+							App.trigger('project:edit', selectedProject);
+						} else {
+							alert("Выберите проект");
+						}
+					});
+
+					projectView.once('destroy', function() {
+						toolbar.off('project:edit');
+						toolbar.stopListening();
+					})
+				}
+			})
+
+
+			
+		},
+		createTaskToolbar: function(mainLayout, associatedProjectId) {
+
+			var toolbar = new Task.Toolbar();
+			mainLayout.toolbarRegion.show(toolbar);
+
+			toolbar.on('create:task', function() {
+				App.trigger('task:create', associatedProjectId);
+			});
+
+			toolbar.on('delete:task', function() {
+				var task = App.Task.Selection.get('target');
+				task.destroy();
+				App.trigger('task:delete', associatedProjectId);
+			});
+		},
+		showTasks: function(projectId) {
+
+			var layout = this.createMainLayout();
 			var project;
 
 			project = App.Project.Controller.getProjectById(projectId);
 
 			App.Task.Controller.showTasks(project, layout.contentRegion);
-			layout.toolbarRegion.show(new Task.Toolbar());
+
+			this.createTaskToolbar(layout, projectId);
 		},
 		showUsers: function() {
 
@@ -175,6 +237,13 @@ define('root/MainApp', [
 			console.log("error loading collections!");
 		});
 	});
+
+	App.Api = GenericAPI;
+	// App.showProjects = GenericAPI.showProjects;
+	// App.showTasks = GenericAPI.showTasks;
+	// App.showUsers = GenericAPI.showUsers;
+
+	// _.bindAll(App, 'showUsers', 'showProjects', 'showTasks');
 
 	var Layout = Marionette.LayoutView.extend({
 		template: '#main-layout',

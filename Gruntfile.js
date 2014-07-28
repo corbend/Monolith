@@ -4,20 +4,20 @@ module.exports = function(grunt) {
 		less: {
 			development: {
 				options: {
-					paths: ["./public/css"],
+					// paths: ["./public/less"],
 					yuicompress: true
 				},
-			files: {
-				"./public/css/style.css": "./css/style.less"
+				files: {
+					"./public/css/start.css": "./public/less/main.less"
+				}
 			}
+		},
+		// running `grunt watch` will watch for changes
+		watch: {
+			files: "./public/less/*.less",
+			tasks: ["less"]
 		}
-	},
-	// running `grunt watch` will watch for changes
-	watch: {
-		files: "./css/*.less",
-		tasks: ["less"]
-	}
-});
+	});
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-watch');
 };

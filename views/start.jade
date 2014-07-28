@@ -1,0 +1,61 @@
+doctype html
+
+html
+	head
+
+		meta(charset="utf-8")
+		link(rel="stylesheet", type="text/css", href="vendor/bootstrap/css/bootstrap.css")
+		link(rel="stylesheet", type="text/css", href="vendor/bootstrap/css/bootstrap-theme.css")
+		link(rel="stylesheet", type="text/css", href="css/start.css")
+		script(type="text/javascript" src="lib/cufon-yui.js")
+		script(type="text/javascript" src="lib/kleinkarpets.cufonfonts.js")
+		script(type="text/javascript" src="lib/oddbats.cufonfonts.js")
+		script(type="text/javascript" src="lib/lombax.cufonfonts.js")
+		script(type="text/javascript" data-main="js/start" src="lib/require.js")
+
+	body
+		header.navbar
+			div.logo-splitter
+			div.brand
+				span 
+					p MONOLITH
+
+		aside.left-sidebar
+			ul.vertical-menu.nav.nav-stacked
+				li 
+					div.btn-wrap
+						button.btn КОМПАНИЯ
+				li
+					div.btn-wrap
+						button.btn УСЛУГИ
+				li
+					div.btn-wrap
+						button.btn КОМАНДА
+				li
+					div.btn-wrap
+						button.btn БЛОГ
+				li
+					div.btn-wrap
+						button.btn КОНТАКТЫ
+
+			div.question-block
+				h3 ЕСТЬ ВОПРОС?
+				form
+					div.input-group
+						input.form-control(type="text" name="username")
+					textarea
+					div.btn-wrap
+						button.btn Спросить
+
+		div.left-decoration
+		div.left-splitter
+
+		aside.right-sidebar
+		div.right-decoration
+		div.right-splitter
+
+		div#mainContent.content
+			
+		footer.navbar
+			
+		include feature-panel

@@ -10,6 +10,18 @@ define('root/tasks/Create', [
 
     var CreateView = Marionette.ItemView.extend({
       template: '#create-task-template',
+      ui: {
+        footer: '.modal-footer'
+      },
+      unbindUi: function() {
+        var modalWindow = $("#myModal");
+        var saveButton = modalWindow.find('button').eq(1);
+        saveButton.off('click');
+      },
+      onBeforeDestroy: function() {
+
+        this.unbindUi();
+      },
       onRender: function() {
 
         var modalWindow = $("#myModal");
@@ -33,6 +45,7 @@ define('root/tasks/Create', [
 
       },
       onTaskSaveClick: function(event) {
+        var scope = this;
         event.preventDefault();
 
         var data = Syphon.serialize(this);
@@ -51,8 +64,11 @@ define('root/tasks/Create', [
         this.model.set(data);
 
         this.trigger('form:before:save', this.model);
-        this.model.save();
 
+        this.model.once('sync', function() {
+          this.trigger('form:after:save', this.model);
+        }, this)
+        this.model.save();
       }
     });
 

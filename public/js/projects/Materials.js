@@ -107,6 +107,7 @@ define('root/projects/Materials', [
 		saveProjectText: function(options) {
 
 			var project = this.getProject();
+			this.editor.save();
 			var text = this.editor.exportFile();
 
 			if (project) {

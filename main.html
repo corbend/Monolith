@@ -6,44 +6,53 @@
 
 		<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.css"/>
 		<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.css"/>
-
+		<link rel="stylesheet" type="text/css" href="css/start.css"/>
 		<link rel="stylesheet" type="text/css" href="css/main.css"/>
 		<script type="text/javascript" src="lib/epiceditor.js"></script>
 		<script type="text/javascript" data-main="js/main" src="lib/require.js"></script>
 	</head>
 
 	<body>
-		
-		<div id="navbar" class="navbar navbar-inverse">
-			<div class="col-md-6">
-				<div id="main-menu-region"></div>
-			</div>
-			<div class="col-md-3">
-				<div id="project-search" class="input-group">
-					<input class="form-control" placeholder="Введите название или номер проекта, задачи">
-					<span class="input-group-btn">
-						<button class="btn btn-default" type="button">
-							<span class="glyphicon glyphicon-search"></span>
-						</button>
-					</span>
+		<header>
+			<div id="navbar" class="navbar navbar-inverse">
+				<div class="logo-splitter"></div>	
+				<div class="col-lg-4"><span class="brand">SENTINEL</span></div>
+				<div class="col-md-4 feature-menu">
+					<div id="main-menu-region"></div>
+				</div>
+				<div class="col-md-3">
+					<div id="project-search" class="input-group">
+						<input class="form-control" placeholder="Введите название или номер проекта, задачи">
+						<span class="input-group-btn">
+							<button class="btn btn-default" type="button">
+								<span class="glyphicon glyphicon-search"></span>
+							</button>
+						</span>
+					</div>
+				</div>
+				<div class="whell username">
+					Иванов Иван Иванович
+				</div>
+				<div class="logout">
+					<form action="/sign-out">
+						<div class="btn-wrap">
+							<button class="logout-button light-button btn btn-success btn-nav">
+								Выход
+							</button>
+						</div>
+					</form>
 				</div>
 			</div>
-			<div class="wheel username">
-				Иванов Иван Иванович
-			</div>
-			<div class="logout">
-				<form action="/sign-out">
-					<button class="btn btn-success btn-nav">
-						Выход
-					</button>
-				</form>
-			</div>
-		</div>
-		<div id="main-region">
+		</header>
+
+		<div id="main-region" class="content">
 
 		</div>
+
+		<div class="modal fade" id="project-edit-modal" tabindex="-1" role="dialog" aria-labelledby="editProjectLabel	" aria-hidden="true"></div>
 
 		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<!--убрать отсюда так вынесено в отдельный темплейт-->
 			<div class="modal-dialog">
 		  		<div class="modal-content">
 		      		<div class="modal-header">
@@ -56,13 +65,30 @@
 		      	 		<div id="append-user-region"></div>
 		      		</div>
 		      		<div class="modal-footer">
-		        		<button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
-		        		<button type="button" class="btn btn-primary">Сохранить</button>
+		        		<button type="button" class="btn btn-default cancel-button" data-dismiss="modal">Отмена</button>
+		        		<button type="button" class="btn btn-primary save-button">Сохранить</button>
 		      		</div>
 		    	</div>
 		  	</div>
 		</div>
 	</body>
+	<script id="modal-dialog-template" type="text/template">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Отмена</span></button>
+					<h4 class="modal-title" id="editProjectLabel">Создание задачи</h4>
+				</div>
+				<div class="modal-body">
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default cancel-button" data-dismiss="modal">Отмена</button>
+					<button type="button" class="btn btn-primary save-button">Сохранить</button>
+				</div>
+			</div>
+		</div>
+	</script>
 
 	<script id="main-layout" type="text/template">
 		<div id="toolbar-region">
@@ -85,7 +111,7 @@
 
 	<script id="project-item-template" type="text/template">
 		<td><input type="checkbox"></td>
-		<td><button class="expand-project btn btn-success">Задачи</button></td>
+		<td><div class="btn-wrap"><button class="expand-project btn btn-success">Задачи</button></td></div>
 		<td><%=name%></td>
 		<td><%=description%></td>
 		<td><%=getStartedTime()%></td>
@@ -138,15 +164,15 @@
 					
 					<div id="js-project-content" class="tab-pane active">
 
-						<div id="project-content-region">
+						<div id="project-content-region" class="vertical-block">
 
 						</div>
 
-						<div id="comment-block">
+						<div id="comment-block" class="vertical-block">
 							<h2>Комментарии</h2>
-							<div id="project-comment-region">
+							<div id="project-comment-region" class="vertical-block">
 							</div>
-							<div id="comment-create-region">
+							<div id="comment-create-region" class="vertical-block">
 							</div>
 						</div>
 					</div>
@@ -178,40 +204,55 @@
 	</script>
 
 	<script id="task-toolbar-template" type="text/template">
-		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-plus"></span></div>
-		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-pencil"></span></div>
-		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-minus"></span></div>
-		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-th-large"></span></div>
-		<div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-list"></span></div>
+		<div class="btn-wrap"><div class="btn btn-default create-task-button"><span class="glyphicon glyphicon-plus"></span></div></div>
+		<div class="btn-wrap"><div class="btn btn-default edit-task-button"><span class="glyphicon glyphicon-pencil"></span></div></div>
+		<div class="btn-wrap"><div class="btn btn-default delete-task-button"><span class="glyphicon glyphicon-minus"></span></div></div>
+		<div class="btn-wrap"><div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-th-large"></span></div></div>
+		<div class="btn-wrap"><div class="btn btn-default" data-toggle="button"><span class="glyphicon glyphicon-list"></span></div></div>
 
 	</script>
 	<script id="project-toolbar-template" type="text/template">
-		<div class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-th-large"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div>
+		<div class="btn-wrap"><div class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></div></div>
+		<div class="btn-wrap"><div class="btn btn-default edit-project-button">
+			<span class="glyphicon glyphicon-pencil"></span>
+		</div></div>
+		<div class="btn-wrap"><div class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></div></div>
+		<div class="btn-wrap"><div class="btn btn-default"><span class="glyphicon glyphicon-th-large"></span></div></div>
+		<div class="btn-wrap"><div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div></div>
 	</script>
 
 	<script id="user-toolbar-template" type="text/template">
-		<div class="btn btn-default btn-new"><span class="glyphicon glyphicon-plus"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-th-large"></span></div>
-		<div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div>
+		<div class="btn-wrap">
+			<div class="btn btn-default btn-new"><span class="glyphicon glyphicon-plus"></span></div>
+		</div>
+		<div class="btn-wrap">
+			<div class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span></div>
+		</div>
+		<div class="btn-wrap">
+			<div class="btn btn-default"><span class="glyphicon glyphicon-minus"></span></div>
+		</div>
+		<div class="btn-wrap">
+			<div class="btn btn-default"><span class="glyphicon glyphicon-th-large"></span></div>
+		</div>
+		<div class="btn-wrap">
+			<div class="btn btn-default"><span class="glyphicon glyphicon-list"></span></div>
+		</div>
 	</script>
 
 	<script id="task-empty-template" type="text/template">
 		<h1>У выбранного проекта нет активных задач.</h1>
+		<div class="btn-wrap">
 		<button id="create-task-button" class="btn-lg btn-success" data-toggle="modal" data-target="#myModal">Создать</button>
+		</div>
 	</script>
 
 	<script id="task-item-template" type="text/template">
 		<div class="row task-header">
 			<div class="col-md-12">
-				<span class="col-md-1 label-primary"><%=name%></span>
+				<span class="col-md-6 label-primary"><%=name%></span>
 				<span class="col-md-4"><%=description%></span>
 				<%=started%>
+				<%=created%>
 				<%=progress%>
 				<%=ended%>
 			</div>
@@ -219,7 +260,7 @@
 		</div>
 		<div class="row task-content">
 			<ul class="nav nav-tabs" role="tablist">
-				<li class="active"><a href="#task-content-<%=_id%>" role="tab" data-toggle="tab">Описание</a></li>
+				<li class="active task-description-tab"><a href="#task-content-<%=_id%>" role="tab" data-toggle="tab">Описание</a></li>
 				<li>
 					<a href="#task-workers-<%=_id%>" class="append-user" role="tab" data-toggle="tab">
 						Участники
@@ -233,7 +274,9 @@
 				<a href="#task-analyze-<%=_id%>" role="tab" data-toggle="tab">Статистика</a></li>
 			</ul>
 			<div class="tab-content">
-				<div id="task-content-<%=_id%>" class="tab-pane active"></div>
+				<div id="task-content-<%=_id%>" class="tab-pane active">
+					<%=getText()%>
+				</div>
 				<div id="task-workers-<%=_id%>" class="tab-pane">
 					<div class="task-users-content"></div>
 				</div>
@@ -274,13 +317,34 @@
 					</div>
 				</div>
 			</div>
-			<button class="btn btn-success form-button save-button">
-				Сохранить
-			</button>
-			<button class="btn btn-default form-button cancel-button">
-				Отмена
-			</button>
+			<div class="btn-wrap">
+				<button class="btn btn-success form-button save-button">
+					Сохранить
+				</button>
+			</div>
+			<div class="btn-wrap">
+				<button class="btn btn-default form-button cancel-button">
+					Отмена
+				</button>
+			</div>
 		</form>
+	</script>
+
+	<script id="edit-project-template" type="text/template">
+		<div class="panel panel-default">
+			<form>
+				<ul class="col-md-12">
+					<li class="input-group">
+						<span class="input-group-addon">Название</span>
+						<input name="name" class="form-control" type="input">
+					</li>
+					<li class="input-group">
+						<span class="input-group-addon">Описание</span>
+						<textarea name="description" class="form-control" type="input"></textarea>
+					</li>
+				</div>
+			</form>
+		</div>
 	</script>
 
 	<script id="project-content-template" type="text/template">
@@ -288,11 +352,15 @@
 		</div>
 		<div id="project-text-editor-region">
 		</div>
-		<div class="edit-text-button btn btn-success">
-			Редактировать
+		<div class="btn-wrap">
+			<div class="edit-text-button btn btn-success">
+				Редактировать
+			</div>
 		</div>
-		<div class="save-text-button btn btn-success">
-			Сохранить текст
+		<div class="btn-wrap">
+			<div class="save-text-button btn btn-success">
+				Сохранить текст
+			</div>
 		</div>
 	</script>
 
@@ -323,11 +391,26 @@
 		</form>
 	</script>
 
+	<script id="task-description-template" type="text/template">
+		<div class="task-text-region"></div>
+		<div class="task-comments-region"></div>
+	</script>
+
+	<script id="task-text-edit-template" type="text/template">
+		<div class="text-editor-placeholder"></div>
+		<div class="text-editor-controls">
+			<button class="btn btn-primary text-edit-button" data-toggle="button">Редактировать</button>
+			<button class="btn btn-default text-save-button">Сохранить текст</button>
+		</div>
+	</script>
+
 	<script id="task-user-list-template" type="text/template">
 		<div class="panel panel-default col-md-12">
 			<ul class="col-md-12 task-user-list">
 			</ul>	
-			<button class="btn btn-success append-user-btn">Добавить</button>
+			<div class="btn-wrap">
+				<button class="btn btn-success append-user-btn">Добавить</button>
+			</div>
 		</div>
 	</script>
 
@@ -376,7 +459,7 @@
 	</script>
 
 	<script id="comment-item-template" type="text/template">
-		<span class="col-md-4"><%= getLocalTime()%></span>
+		<span class="col-md-2 label-success"><%= getLocalTime()%></span>
 		<span class="col-md-6"><%= getAuthorName()%></span>
 		<div class="text-block">
 			<%=text%>
@@ -390,8 +473,10 @@
 				<textarea name="text" class="form-control"></textarea>
 			</div>
 			<!--CAPTCHA-->
-			<div class="save-button btn btn-success">
-				Добавить
+			<div class="btn-wrap">
+				<div class="save-button btn btn-success">
+					Добавить
+				</div>
 			</div>
 		</form>
 	</script>
@@ -403,7 +488,7 @@
 	<script id="file-upload-template" type="text/template">
 		<form enctype="multipart/form-data" method="POST">
 			<input type="file" name="addFile" class="multi" multiple/>
-			<button class="btn btn-success">Добавить файл</button>
+			<div class="btn-wrap"><button class="btn btn-success">Добавить файл</button></div>
 		</form>
 	</script>
 
