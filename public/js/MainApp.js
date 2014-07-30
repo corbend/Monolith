@@ -263,6 +263,11 @@ define('root/MainApp', [
 
 	// 	GenericAPI.showProjects();
 	// });
+		
+	Cufon.replace('.brand', {
+		fontFamily: 'YonderRecoil-Regular',
+		textShadow: '0px 0px 25px white'
+	});
 
 	return App;
 })
