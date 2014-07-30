@@ -6,7 +6,7 @@
 
 		<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.css"/>
 		<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap-theme.css"/>
-		<link rel="stylesheet" type="text/css" href="css/start.css"/>
+<!-- 		<link rel="stylesheet" type="text/css" href="css/start.css"/> -->
 		<link rel="stylesheet" type="text/css" href="css/main.css"/>
 		<script type="text/javascript" src="lib/epiceditor.js"></script>
 		<script type="text/javascript" data-main="js/main" src="lib/require.js"></script>
@@ -16,32 +16,37 @@
 		<header>
 			<div id="navbar" class="navbar navbar-inverse">
 				<div class="logo-splitter"></div>	
-				<div class="col-lg-4"><span class="brand">SENTINEL</span></div>
-				<div class="col-md-4 feature-menu">
+				<div class="col-lg-5"><span class="brand">SENTINEL</span></div>
+				<div class="col-md-3 feature-menu">
 					<div id="main-menu-region"></div>
 				</div>
+
 				<div class="col-md-3">
-					<div id="project-search" class="input-group">
-						<input class="form-control" placeholder="Введите название или номер проекта, задачи">
-						<span class="input-group-btn">
-							<button class="btn btn-default" type="button">
-								<span class="glyphicon glyphicon-search"></span>
-							</button>
-						</span>
-					</div>
-				</div>
-				<div class="whell username">
-					Иванов Иван Иванович
-				</div>
-				<div class="logout">
-					<form action="/sign-out">
-						<div class="btn-wrap">
-							<button class="logout-button light-button btn btn-success btn-nav">
-								Выход
-							</button>
+					<div class="col-md-12">
+						<div id="project-search" class="input-group">
+							<input class="form-control" placeholder="Введите название или номер проекта, задачи">
+							<span class="input-group-btn">
+								<button class="btn btn-default" type="button">
+									<span class="glyphicon glyphicon-search"></span>
+								</button>
+							</span>
 						</div>
-					</form>
-				</div>
+					</div>
+
+					<div class="col-md-12">
+						<div class="whell username">
+							Иванов Иван Иванович
+						</div>
+						<div class="logout">
+							<form action="/sign-out">
+								<div class="btn-wrap">
+									<button class="logout-button light-button btn btn-success btn-nav">
+										Выход
+									</button>
+								</div>
+							</form>
+						</div>
+					</div>
 			</div>
 		</header>
 

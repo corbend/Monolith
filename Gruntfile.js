@@ -8,7 +8,8 @@ module.exports = function(grunt) {
 					yuicompress: true
 				},
 				files: {
-					"./public/css/start.css": "./public/less/main.less"
+					"./public/css/main.css": "./public/less/main.less",
+					"./public/css/start.css" : "./public/less/start.less"
 				}
 			}
 		},

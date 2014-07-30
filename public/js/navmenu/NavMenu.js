@@ -20,7 +20,7 @@ define('root/navmenu/NavMenu', [
 		{name: 'Проекты', position: 1, showCounter: true},
 		{name: 'Задачи', position: 2, showCounter: true},
 		{name: 'Сообщения', position: 3, showCounter: true},
-		{name: 'Пользователи', position: 4, showCounter: true},
+		// {name: 'Пользователи', position: 4, showCounter: true},
 		{name: 'Журнал', position: 5},
 		{name: 'Статистика', position: 6},
 		{name: 'Фильтрация', position: 7}
@@ -29,6 +29,7 @@ define('root/navmenu/NavMenu', [
 	var MenuItem = Marionette.ItemView.extend({
 		template: '#menu-item-template',
 		tagName: 'li',
+		className: 'col-md-2 menu-item',
 		triggers: {
 			'click a': 'menu:select'
 		}

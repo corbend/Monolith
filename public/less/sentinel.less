@@ -14,15 +14,49 @@
 	}
 }
 
+
+#toolbar-region {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	width: 120px;
+}
+
+#content-region {
+	position: absolute;
+	height: 100%;
+	left: 140px;
+	right: 10px;
+}
+
 #main-menu-region {
 	margion-top: 3px;
+	min-width: 500px;
+	.menu-item {
+		margin: 0 auto;
+		width: 150px;
 
+		> a {
+			text-align: center;
+			width: 100%;
+		}
+	}
 	.badge {
+		background-color: black;
+		background-image: linear-gradient();
+		margin: 0 auto;
 		border-radius: 2px;
-		color: black;
+		color: white;
+		display: block;
 		text-shadow: 0px 0px 10px white;
 		box-shadow: 0px 0px 15px red;
 		border-color: 1px solid red;
+	}
+
+	> ul {
+		> li {
+
+		}
 	}
 }
 
@@ -32,16 +66,15 @@
 
 .feature-menu {
 	margin-top: 6px;
-	margin-left: 140px;
 	text-transform: uppercase;
 	font-weight: bold;
-	li a:nth-child(1),
+/*	li a:nth-child(1),
 	li a:nth-child(2),
 	li a:nth-child(3),
 	li a:nth-child(4),
 	{
 		color: black;
-	};
+	};*/
 
 	li a:nth-child(5),
 	li a:nth-child(6),
@@ -56,26 +89,20 @@ body {
 	margin: 0;
 
 	header  {
-		margin-left: -10px;	
 		> .navbar {
 			background-image: none;
 			border-color: none;
 			font-size: 0.9em;
 			.brand {
 				vertical-align: justify;
-				top: 0;
-				left: 150px;
-				position: absolute;
-				width: 40%;
-				font-family: Yonder Recoil;
 				float: left;
-				span {
-					font-size: 5em;
-				}
-			}
-
-			.nav {
-				
+				height: 100%;
+				font-family: Yonder Recoil;
+				text-align: right;
+				display: block;
+				left: 140px;
+				right: 0;
+				height: 100%;
 			}
 
 			margin-top: -10px;
@@ -103,6 +130,23 @@ body {
 			opacity: 1;
 			z-index: 0;
 			margin-top: 4px;
+		}
+
+		.username {
+			height: 100%;
+			float: right;
+			text-align: center;
+			margin-top: 20px;
+		}
+
+		.logout {
+			.btn-wrap {
+				margin: 0;
+			}
+			margin-top: 5px;
+			float: left;
+			height: 100%;
+			margin-right: 10px;
 		}
 	}
 }
@@ -143,6 +187,11 @@ body {
 
 .project-info {
 	padding: 10px;
+}
+
+#project-search {
+	margin-top: 15px;
+	margin-bottom: 0px;
 }
 
 .no-bg {
@@ -206,7 +255,7 @@ body {
 table {
 
 	text-align: center;
-
+	width: 100%;
 
 	tr {
 		border-bottom: 1px solid @text-color !important;
@@ -234,10 +283,17 @@ table {
 		border: none;
 	}
 
+	tr td:nth-child(n+5) {
+		padding: 10px 0;
+	}
+
 	thead {
 		font-size: 1.5em;
 		text-transform: uppercase;
 		text-shadow: 0px 0px 5px white;
+		tr {
+			height: 40px;
+		}
 		th:nth-child(n+1) {
 			color: black;
 			text-align: center;

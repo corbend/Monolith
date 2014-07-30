@@ -11,6 +11,39 @@ var mongoPort = process.env.OPENSHIFT_MONGODB_DB_PORT;
 var mongoUsername = "admin" || process.env.OPENSHIFT_MONGODB_DB_USERNAME;
 var mongoPassword = "F8DsrVgDCPQn" || process.env.OPENSHIFT_MONGODB_DB_PASSWORD;
 
+function getConnectionConfig(configObject) {
+
+	debugger;
+	var connectionString = configObject.get('db_string');
+	var development = true;
+	//OPENSHIFT setup
+	if (mongoHost && mongoPort) {
+		development = false;
+		connectionString = [
+			'mongodb://',
+			mongoUsername, ':',
+			mongoPassword, '@',
+			mongoHost, ":", mongoPort, "/", "monolith"
+		].join("");
+	}
+
+	var baseConfig = {
+		connectionString: connectionString,
+		name: "monolith",
+		db: "monolith"
+	};
+
+	if (development) {
+
+		baseConfig.host = mongoHost;
+		baseConfig.port = mongoPort;
+		baseConfig.username = mongoUsername;
+		baseConfig.password = mongoPassword;
+	}
+
+	return baseConfig;
+}
+
 function init(configObject, outerCallback) {
 
 	async.waterfall([ 
@@ -23,18 +56,8 @@ function init(configObject, outerCallback) {
 		},
 		function(configObject, cb) {
 			//коннектимся к базе
-			var connectionString = configObject.get('db_string');
-			//OPENSHIFT setup
-			if (mongoHost && mongoPort) {
-				connectionString = [
-					'mongodb://',
-					mongoUsername, ':',
-					mongoPassword, '@',
-					mongoHost, ":", mongoPort, "/", "monolith"
-				].join("");
-			}
-
-			mongoose.connect(connectionString);
+		
+			mongoose.connect(getConnectionConfig(configObject).connectionString);
 
 			var cn = mongoose.connection;
 
@@ -68,5 +91,6 @@ module.exports = {
 	Project: Project,
 	Task: Task,
 	User: User,
-	init: init
+	init: init,
+	getConnectionConfig: getConnectionConfig
 }
