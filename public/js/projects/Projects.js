@@ -1,11 +1,13 @@
 define('root/projects/Projects', [
 	'jquery', 'underscore', 'backbone', 'backbone.marionette',
+	'root/base/ConfirmWindow',
 	'root/projects/Create',
 	'root/projects/Edit',
 	'root/projects/Materials',
 	'root/comments/Comments',
 	'root/projects/Files'
 ], function($, _, Backbone, Marionette, 
+	ConfirmWindow,
 	Create, Edit, Materials, Comments, Files
 ) {"use strict";
 
@@ -138,7 +140,8 @@ define('root/projects/Projects', [
 		className: 'btn-group btn-group-vertical vertical-menu left-sidebar',
 		triggers: {
 			'click .btn-default': 'texteditor:show',
-			'click .edit-project-button': 'project:edit'
+			'click .edit-project-button': 'project:edit',
+			'click .delete-project-button': 'project:delete'
 		}
 	})
 
@@ -164,6 +167,26 @@ define('root/projects/Projects', [
 			this.listenTo(editView, 'form:saved', function() {
 				projects.fetch({reset: true});
 			}, this);
+		},
+		moveToArchive: function(project) {
+
+			var confirmMessage = new ConfirmWindow({
+				el: '#confirmModal',
+				title: 'Внимание',
+				text: 'Вы хотите поместить проект в архив?',
+				onOK: function() {
+					debugger;
+					project.set('archive', true);
+					project.save();
+				}
+			})
+
+			confirmMessage.render();
+			// var confirmDialogRegion = new Marionette.Region({
+			// 	el: '#confirm-dialog-region'
+			// });
+
+			// confirmDialogRegion.show(confirmMessage);
 		},
 		showProjects: function(contentRegion) {
 

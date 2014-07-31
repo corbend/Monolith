@@ -150,6 +150,13 @@ define('root/MainApp', [
 						}
 					});
 
+					toolbar.on('project:delete', function() {
+						var selectedProject = projectView.getSelected();
+						if (selectedProject) {
+							App.Project.Controller.moveToArchive(selectedProject);
+						}
+					})
+
 					projectView.once('destroy', function() {
 						toolbar.off('project:edit');
 						toolbar.stopListening();
