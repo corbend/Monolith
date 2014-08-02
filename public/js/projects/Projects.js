@@ -1,13 +1,14 @@
 define('root/projects/Projects', [
 	'jquery', 'underscore', 'backbone', 'backbone.marionette',
 	'root/base/ConfirmWindow',
+	'root/projects/views/CreateSuccess',
 	'root/projects/Create',
 	'root/projects/Edit',
 	'root/projects/Materials',
 	'root/comments/Comments',
 	'root/projects/Files'
 ], function($, _, Backbone, Marionette, 
-	ConfirmWindow,
+	ConfirmWindow, CreateSuccess,
 	Create, Edit, Materials, Comments, Files
 ) {"use strict";
 
@@ -34,7 +35,13 @@ define('root/projects/Projects', [
 		url: function() {return 'projects';}
 	});
 
+	var ArchivedProjects = Backbone.Collection.extend({
+		model: Project,
+		url: function() {return 'project?archive=true'}
+	});
+
 	var projects = new Projects();
+	var archivedProjects = new ArchivedProjects();
 
 	var ProjectItem = Marionette.ItemView.extend({
 		template: '#project-item-template',
@@ -84,32 +91,24 @@ define('root/projects/Projects', [
 	});
 
 	var ProjectView = Marionette.CompositeView.extend({
+
 		template: '#projects-list-template',
 		className: 'panel panel-normal',
 		childView: ProjectItem,
 		childViewContainer: 'tbody',
+
 		events: {
 
 			'click a[href="#js-project-create"]': 'onInfoTabActivate',
 			'click a[href="#js-project-content"]': 'onMaterialTabActivate',
 			'click a[href="#js-project-files"]': "onFilesTabActivate", 
 		},
+		
 		onInfoTabActivate: function(event) {
 
 			//когда активируется вкладка создания нового проекта
-
-			var createView = new Create.View({
-				model: new Project()
-			});
-
-			//FIXME - если создать единожды экземпляр региона в модуле то вьюха почем-то не появляется
-			var region = new Create.Region();
-			region.empty();
-			region.show(createView);
-
-			this.listenTo(createView, 'form:saved', function() {
-				projects.fetch({reset: true});
-			}, this);
+			this.trigger('create:project');
+			
 		},
 		onMaterialTabActivate: function(event) {
 
@@ -146,11 +145,17 @@ define('root/projects/Projects', [
 	})
 
 	var Controller = Marionette.Controller.extend({
+
 		initialize: function(App) {
 			this.App = App;
 			this.Comments = Comments;
 			this.Materials = Materials;
 			this.Files = Files;
+
+			this.Create = {
+				Controller: new Create.Controller(App)
+			}
+
 			this.Comments.Controller = new Comments.Controller(App);
 			this.Files.Controller = new Files.Controller(App);
 		},
@@ -175,18 +180,47 @@ define('root/projects/Projects', [
 				title: 'Внимание',
 				text: 'Вы хотите поместить проект в архив?',
 				onOK: function() {
-					debugger;
 					project.set('archive', true);
 					project.save();
 				}
 			})
 
 			confirmMessage.render();
-			// var confirmDialogRegion = new Marionette.Region({
-			// 	el: '#confirm-dialog-region'
-			// });
 
-			// confirmDialogRegion.show(confirmMessage);
+		},
+		createMenu: function(projectView, menuContainer) {
+
+			var ProjectMenu = Marionette.ItemView.extend({
+				el: menuContainer,
+				template: false,
+				triggers: {
+					'click .show-projects-menu-link': 'show:projects',
+					'click .show-archive-menu-link' : 'show:archive'
+				}
+			});
+
+			var menu = new ProjectMenu();
+
+			menu.on('show:projects', function() {
+
+				this.showProjects();
+			}, this);
+
+			menu.on('show:archive', function() {
+
+				this.showArchive();
+			}, this);
+
+			return menu;
+		},
+		showArchive: function() {
+
+			var projectView = new ProjectView({
+				collection: archivedProjects
+			});
+			projectView.on('render', function() {
+				this.createMenu(projectView, projectView.$(".project-menu"));
+			}, this);
 		},
 		showProjects: function(contentRegion) {
 
@@ -195,8 +229,17 @@ define('root/projects/Projects', [
 				collection: projects
 			});
 
+			projectView.on('render', function() {
+				this.createMenu(projectView, projectView.$(".project-menu"));
+			}, this);
+
 			projectView.on('childview:show:task', function(childView, projectModel) {
 				this.App.trigger("project:show:task", projectModel.id, contentRegion);
+			}, this);
+
+			projectView.on('create:project', function() {
+				debugger;
+				this.Create.Controller.createProject(new Project());
 			}, this);
 
 			//TODO - проверить на зомби представления

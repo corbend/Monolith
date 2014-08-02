@@ -25,15 +25,8 @@
 				</div>
 
 				<div class="col-md-4">
-					<div class="col-md-12">
-						<div id="project-search" class="input-group">
-							<input class="form-control" placeholder="Введите название или номер проекта, задачи">
-							<span class="input-group-btn">
-								<button class="btn btn-default" type="button">
-									<span class="glyphicon glyphicon-search"></span>
-								</button>
-							</span>
-						</div>
+					<div id="project-search-region" class="col-md-12">
+						
 					</div>
 
 					<div class="col-md-12">
@@ -173,7 +166,12 @@
 
 	<script id="projects-list-template" type="text/template">
 		<div class="panel-heading">
-			Проекты
+			<div class="project-menu">
+				<div class="project-menu-item"><a href="#projects" class="show-projects-menu-link">Проекты</a></div>
+				<ul class="project-menu-item nav nav-pills">
+					<li class="show-archive-menu-link"><a href="#arhive" >Архив</a></li>
+				</ul>
+			</div>
 		</div>
 		<div class="panel-body">
 			<div class="panel panel-default">
@@ -246,6 +244,14 @@
 		</div>
 	</script>
 
+	<script id="success-project-view" type="text/template"> 
+		<h1><%=title()%></h1>
+		<div class="btn-wrap">
+			<button class="recreate-new btn btn-success">Создать еще</button>
+		</div>
+	</script>
+
+	<!--TASKS-->
 	<script id="task-toolbar-template" type="text/template">
 		<div class="btn-wrap"><div class="btn btn-default create-task-button"><span class="glyphicon glyphicon-plus"></span></div></div>
 		<div class="btn-wrap"><div class="btn btn-default edit-task-button"><span class="glyphicon glyphicon-pencil"></span></div></div>
@@ -546,4 +552,25 @@
 		<div id="file-list-region"></div>
 	</script>
 
+
+
+
+	<!--COMPONENTS-->
+	<script id="search-field-template" type="text/template">
+		<% if (label) {%>
+		<div class="col-md-2">
+			<label><%=label%></label>
+		</div>
+		<% } %>
+		<div class="col-md-10">
+			<div class="input-group">
+				<input class="form-control" placeholder="<%=placeholderText%>">
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button">
+						<span class="glyphicon glyphicon-search"></span>
+					</button>
+				</span>
+			</div>
+		</div>
+	</script>
 </html>

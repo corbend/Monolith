@@ -4,9 +4,12 @@ define('root/MainApp', [
 	'root/navmenu/NavMenu',
 	'root/projects/Projects',
 	'root/tasks/Task',
-	'root/users/Users'
+	'root/users/Users',
+
+	'root/base/SearchField'
 ], function($, _, Backbone, Marionette, Selection,
-	NavMenu, Project, Task, User
+	NavMenu, Project, Task, User,
+	SearchField
 ) {"use strict";
 		
 	var App = new Marionette.Application();
@@ -127,6 +130,17 @@ define('root/MainApp', [
 						break;
 				}
 			});
+
+			var projectSearchRegion = new Marionette.Region({
+				el: "#project-search-region"
+			})
+
+			projectSearchRegion.show(new SearchField({
+				placeholderText: 'Введите название/номер проекта или задачи',
+				searchCollection: function() {
+					return App.Project.Collection;
+				}
+			}))
 
 			return layout;
 		},
@@ -271,6 +285,11 @@ define('root/MainApp', [
 	// 	GenericAPI.showProjects();
 	// });
 		
+	App.reqres.setHandler('projects', function() {
+		return Project.Collection;
+	});
+
+
 	Cufon.replace('.brand', {
 		fontFamily: 'YonderRecoil-Regular',
 		textShadow: '0px 0px 25px white'
