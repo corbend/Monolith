@@ -6,10 +6,11 @@ define('root/MainApp', [
 	'root/tasks/Task',
 	'root/users/Users',
 
-	'root/base/SearchField'
+	'root/base/SearchField',
+	'root/base/ViewVariator'
 ], function($, _, Backbone, Marionette, Selection,
 	NavMenu, Project, Task, User,
-	SearchField
+	SearchField, ViewVariator
 ) {"use strict";
 		
 	var App = new Marionette.Application();
@@ -140,7 +141,21 @@ define('root/MainApp', [
 				searchCollection: function() {
 					return App.Project.Collection;
 				}
-			}))
+			}));
+
+			var switchRegion = new Marionette.Region({
+				el: '#switch-region'
+			});
+
+			
+			// switchRegion.show(new ViewVariator({
+			// 	controller: App.Project.Controller,
+			// 	variants: ['list', 'grid'],
+			// 	switchBindings: {
+			// 		'list': 'showProjects',
+			// 		'grid': 'showArchive'
+			// 	}
+			// }));
 
 			return layout;
 		},

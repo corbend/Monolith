@@ -28,6 +28,8 @@
 					<div id="project-search-region" class="col-md-12">
 						
 					</div>
+					<div id="switch-region">
+					</div>
 
 					<div class="col-md-12">
 						<div class="logout">
@@ -573,4 +575,27 @@
 			</div>
 		</div>
 	</script>
+
+	<script id="view-variator-template" type="text/template">
+		<div class="btn-group">
+			<% if (listOn) {%>
+				<button class="btn btn-default list-button">
+				<span class="glyphicon glyphicon-list">
+				</span></button>
+			<% } %>
+
+			<% if (gridOn) {%>
+				<button class="btn btn-default grid-button">
+				<span class="glyphicon glyphicon-th">
+				</span></button>
+			<% } %>
+
+			<% if (tableOn) {%>
+				<button class="btn btn-default table-button">
+				<span class="glyphicon glyphicon-th-large">
+				</span></button>
+			<% } %>
+		</div>
+	</script>
+
 </html>
